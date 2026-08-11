@@ -276,3 +276,31 @@ stable, widely-used foundations is strictly less risk over a multi-year horizon,
 the wrapper saved little code.
 **Consequences:** We own ~80 lines of projection/path code (fixture-testable). Data
 attribution note for Natural Earth (public domain) in README.
+
+---
+
+*DEC-023+ recorded during V1 implementation (2026-08-11).*
+
+## DEC-023 — Hand-rolled UI primitives instead of shadcn/ui
+**Decision:** Implement the DESIGN_SYSTEM.md components (badges, pills, cards, states,
+drawer, watch button) directly in Tailwind + React; no shadcn/ui, no Radix.
+**Alternatives:** shadcn/ui per original plan.
+**Rationale:** Every component in the design system is bespoke intelligence-terminal
+UI, not a generic admin control; shadcn's value (prebuilt generic components) didn't
+apply, and the copied-in code would have been restyled beyond recognition anyway.
+Fewer dependencies, less code to own.
+**Consequences:** Complex controls (combobox, popover menus) would need Radix later if
+ever required. Current UI needs none.
+
+## DEC-024 — Brief window has a 24-hour floor; watch deltas reset on leaving Watchlist
+**Decision:** (a) The Morning Brief covers `min(last_visit, now − 24h)` — at least a
+full day, more if the user was away longer. (b) `POST /visit` (app load) only updates
+the app-level timestamp; per-watch `last_viewed_at` resets when the user leaves the
+Watchlist page, via `POST /watchlist/mark-viewed`.
+**Alternatives:** naive "since last visit" everywhere (original implementation).
+**Rationale:** Found via real browser QA: marking everything visited on app load made
+the Brief and watch deltas almost always empty — the app reported "nothing happened"
+seconds after showing what happened. "What changed since I last looked?" (§25/§51)
+means since the user *reviewed* the information, not since the process started.
+**Consequences:** Brief always has a day of content; watchlist statuses persist until
+actually viewed; frequent visitors see stable, truthful deltas.

@@ -93,7 +93,7 @@ for router in (meta.router, sources.router, items.router, entities.router,
 app.mount("/api", api)
 
 # Serve the built SPA when present (DEC-017). Dev mode uses Vite on :5173 instead.
-_SPA_DIR = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+_SPA_DIR = Path(settings.spa_dir)
 if _SPA_DIR.exists():
     app.mount("/assets", StaticFiles(directory=_SPA_DIR / "assets"), name="assets")
 

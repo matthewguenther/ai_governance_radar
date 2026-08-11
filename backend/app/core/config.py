@@ -28,6 +28,8 @@ class Settings(BaseSettings):
 
     # Directory containing seed data / source registry YAML (repo data/ by default)
     data_dir: str = str(_REPO_ROOT / "data")
+    # Built SPA directory served in production (DEC-017); repo frontend/dist by default
+    spa_dir: str = str(_REPO_ROOT / "frontend" / "dist")
 
     @property
     def cors_origin_list(self) -> list[str]:

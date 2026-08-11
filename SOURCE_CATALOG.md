@@ -1,9 +1,25 @@
 # Source Catalog
 
-Candidate seed sources for V1 (§60). **Every row is UNVERIFIED until T-007 confirms the
-actual feed/API URL, format, cadence, and ToS/robots by fetching it.** Do not copy
-unverified URLs into `data/sources/` YAML. Preferred ingestion order: official API >
-RSS/Atom > structured feed > official HTML > secondary (§61).
+Seed sources for V1 (§60). **T-007 live verification performed 2026-08-11** — verified
+entries are in `data/sources/sources.yaml`; this catalog records outcomes. Preferred
+ingestion order: official API > RSS/Atom > structured feed > official HTML > secondary
+(§61).
+
+## Verification outcomes (2026-08-11, honest User-Agent)
+
+| Source | Mechanism | Result |
+|---|---|---|
+| NIST News | RSS `nist.gov/news-events/news/rss.xml` | ✅ verified — 40 items, conditional GET works |
+| Federal Register (AI query) | official JSON API | ✅ verified — 20 items, public domain |
+| GOV.UK AI announcements | Atom search feed | ✅ verified — 20 items, OGL v3 attribution |
+| arXiv AI-security query | Atom API `export.arxiv.org` | ✅ verified — 20 items |
+| NIST AI RMF page | page_watch | ✅ verified |
+| EU AI Act (EUR-Lex) page | page_watch | ✅ verified (stable text hash) |
+| MITRE ATLAS | page_watch `atlas.mitre.org/` | ✅ verified (`/resources/updates` was 404) |
+| OWASP GenAI project | page_watch | ✅ verified (occasional dynamic-content hash churn; capped at 1 signal/day) |
+| Stanford HAI News | page_watch | ✅ verified |
+| CISA advisories | RSS | ❌ HTTP 403 for non-browser UA — shipped **disabled**, no UA spoofing |
+| ISO 42001 page | page_watch | ❌ HTTP 403 for non-browser UA — shipped **disabled** |
 
 Tiers (§31): 1 = primary authoritative · 2 = high-quality secondary · 3 = professional
 reporting · 4 = community/discovery (never establishes regulatory facts alone).

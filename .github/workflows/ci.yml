@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run: { working-directory: backend }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -e ".[dev]"
+      - run: ruff check app tests
+      - run: ruff format --check app tests || true  # formatting advisory in V1
+      - run: mypy app
+      - run: pytest -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run: { working-directory: frontend }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t radar:ci .
+      - name: Smoke test
+        run: |
+          docker run -d --name radar -p 8000:8000 radar:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/api/health > /dev/null; then break; fi
+            sleep 2
+          done
+          curl -fsS http://localhost:8000/api/health | grep '"ok"'
+          # Seeded data must be present and the SPA must serve
+          test "$(curl -fsS 'http://localhost:8000/api/items?limit=1' | python3 -c 'import json,sys;print(json.load(sys.stdin)["total"])')" -gt 0
+          curl -fsS http://localhost:8000/ | grep -i '<title>AI Governance Radar'
+          docker logs radar --tail 20

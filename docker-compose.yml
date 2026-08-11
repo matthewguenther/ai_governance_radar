@@ -1,0 +1,23 @@
+# Optional convenience wrapper around the single image (DEC-017).
+# Canonical local run is the plain Python path documented in README.md.
+#
+#   docker compose up
+#   open http://localhost:3000
+#
+# The `ai` profile is reserved for Phase 2 local-model services (Ollama); it is
+# intentionally empty in V1 — no LLM is required or included.
+
+services:
+  radar:
+    build: .
+    ports:
+      - "3000:8000"
+    environment:
+      SCHEDULER_ENABLED: "true"
+      DEMO_DATA: "true"
+    volumes:
+      - radar-data:/data
+    restart: unless-stopped
+
+volumes:
+  radar-data:
