@@ -51,8 +51,14 @@ glyph. AA contrast for text pairs. Sanctioned decorative color: KPI card tints
 ## 3. Brand mark
 
 `RadarLogo` (components/ui/RadarLogo.tsx): blue radar structure (rings, crosshairs,
-center) with a **green** rotating sweep beam and green contact blips — 5s rotation,
-the app's only looping animation, disabled under `prefers-reduced-motion`.
+center) with a rotating **bright green** sweep beam (`#4FE58F` — deliberately
+brighter than `sev-positive` so it reads at small sizes) and matching contact blips
+with a soft glow. 5s rotation; the app's only looping animation; disabled under
+`prefers-reduced-motion`.
+
+Sidebar lockup: the mark is **centered** at the top of the sidebar (56px expanded,
+34px collapsed) above a centered "AI Governance / RADAR" wordmark, separated from
+navigation by a hairline rule.
 
 ## 4. Typography
 
@@ -65,7 +71,7 @@ the app's only looping animation, disabled under `prefers-reduced-motion`.
 
 | Component | What it shows |
 |---|---|
-| `FlagChip` | Real SVG flags in circular chips: countries/EU/UN via `flag-icons`, US states via `us-state-flags` (NYC → NY flag). Intergov bodies (OECD, G7…) fall back to a neutral globe. Assets bundle locally — never fetched at runtime. |
+| `FlagChip` | Real SVG flags in circular chips: countries/EU/UN via `flag-icons`, US states via `us-state-flags` (NYC → NY flag). Intergov bodies (OECD, G7…) fall back to a neutral globe. Assets bundle locally — never fetched at runtime. **Flag content is absolutely centered and scaled to cover the circle** — neither package's own wrapper centers correctly inside a fixed frame (see the component's comment); verify offsets stay 0 if the packages are upgraded. |
 | `OrgAvatar` | Monogram tiles with recognizable colors: NIST blue, ISO red, OWASP slate, MITRE violet, arXiv crimson, GOV.UK blue, etc. Regex-matched from names; hashed neutral fallback. |
 | `IncidentIcon` | Category glyph (terminal = prompt injection, bot = agency, scale = bias, face-scan = deepfake…) in a severity-tinted tile. |
 | `ItemAvatar` | Row logic: known org entity → OrgAvatar · else jurisdiction → FlagChip · else source monogram. |

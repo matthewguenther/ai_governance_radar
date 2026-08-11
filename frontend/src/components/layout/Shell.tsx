@@ -112,16 +112,21 @@ export function Shell() {
           collapsed ? "w-16" : "w-60",
         )}
       >
-        <div className={clsx("flex items-center gap-2.5 px-4 py-4", collapsed && "justify-center px-2")}>
-          <RadarLogo size={collapsed ? 28 : 34} />
+        <div
+          className={clsx(
+            "flex flex-col items-center border-b border-bd-subtle",
+            collapsed ? "px-2 py-4" : "px-4 py-5",
+          )}
+        >
+          <RadarLogo size={collapsed ? 34 : 56} />
           {!collapsed && (
-            <div className="leading-tight">
-              <p className="text-sm font-semibold text-tx-primary">AI Governance</p>
-              <p className="font-mono text-[9.5px] tracking-[0.26em] text-accent">RADAR</p>
+            <div className="mt-2.5 text-center leading-tight">
+              <p className="text-[15px] font-semibold tracking-tight text-tx-primary">AI Governance</p>
+              <p className="mt-0.5 font-mono text-[10px] tracking-[0.34em] text-accent">RADAR</p>
             </div>
           )}
         </div>
-        <div className="flex-1 overflow-y-auto py-2">{navBody(collapsed)}</div>
+        <div className="flex-1 overflow-y-auto py-3">{navBody(collapsed)}</div>
         <button
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
