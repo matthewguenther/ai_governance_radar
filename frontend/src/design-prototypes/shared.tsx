@@ -75,7 +75,9 @@ export interface ProtoMapStyle {
   landBorder: string;
   ramp: string[];          // low → high activity
   graticule?: string;      // color, omit for none
-  marker?: string;         // crosshair/dot color for active countries, omit for none
+  marker?: string;         // crosshair color for active countries, omit for none
+  /** glowing dot markers sized/colored by activity (Direction A "alive" mode) */
+  dotColor?: (value: number, max: number) => string;
 }
 
 export function ProtoMap({ rows, style, height = 340 }: {
@@ -130,7 +132,7 @@ export function ProtoMap({ rows, style, height = 340 }: {
           </path>
         );
       })}
-      {style.marker &&
+      {style.marker && !style.dotColor &&
         rows.filter((r) => r.regulations > 0 && r.iso_numeric).map((r) => {
           const c = centroids.get(r.iso_numeric!.padStart(3, "0"));
           if (!c) return null;
@@ -140,6 +142,20 @@ export function ProtoMap({ rows, style, height = 340 }: {
               <line x1={c[0] + 2} y1={c[1]} x2={c[0] + 5} y2={c[1]} />
               <line x1={c[0]} y1={c[1] - 5} x2={c[0]} y2={c[1] - 2} />
               <line x1={c[0]} y1={c[1] + 2} x2={c[0]} y2={c[1] + 5} />
+            </g>
+          );
+        })}
+      {style.dotColor &&
+        rows.filter((r) => r.regulations > 0 && r.iso_numeric).map((r) => {
+          const c = centroids.get(r.iso_numeric!.padStart(3, "0"));
+          if (!c) return null;
+          const col = style.dotColor!(r.regulations, max);
+          const radius = 2.5 + 2.5 * Math.sqrt(r.regulations / max);
+          return (
+            <g key={`dot-${r.code}`}>
+              <circle cx={c[0]} cy={c[1]} r={radius + 4} fill={col} opacity={0.18} />
+              <circle cx={c[0]} cy={c[1]} r={radius + 1.5} fill={col} opacity={0.35} />
+              <circle cx={c[0]} cy={c[1]} r={radius} fill={col} stroke="rgba(255,255,255,.5)" strokeWidth={0.6} />
             </g>
           );
         })}

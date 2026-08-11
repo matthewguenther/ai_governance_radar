@@ -1,18 +1,19 @@
 /**
- * DIRECTION A — "Refined Intelligence Dashboard" (TEMPORARY PROTOTYPE)
- * Premium polish of the existing aesthetic: deep navy surfaces with subtle top-lit
- * gradients, one consistent elevation, refined outline micro-pills, strong Inter
- * hierarchy, sparklines, glowing map markers. Self-contained; inline styles only.
+ * DIRECTION A — "Refined Intelligence Dashboard" (TEMPORARY PROTOTYPE, rev 2)
+ * Owner feedback applied: animated radar mark, jurisdiction flag chips, org
+ * monogram avatars, tinted "alive" KPI cards, filled status pills, glowing map
+ * markers with legend. Self-contained; inline styles only.
  */
 
 import { Link } from "react-router-dom";
 import {
-  AlertTriangle, ArrowUpRight, BookOpenCheck, Landmark, LayoutDashboard,
-  Newspaper, Radar, Search, Settings, Sunrise,
+  Activity, AlertTriangle, ArrowUpRight, BookOpenCheck, GraduationCap, Landmark,
+  LayoutDashboard, Newspaper, Radar, Search, Settings, ShieldAlert, Sunrise,
 } from "lucide-react";
 
 import { ProtoMap, Sparkline, fmtDate, rel, sparkSeries, useProtoData } from "./shared";
-import type { ItemOut } from "../lib/types";
+import { Donut, FlagChip, IncidentIcon, OrgAvatar, RadarLogo, orgFor } from "./protoIcons";
+import type { EntityOut, ItemOut } from "../lib/types";
 
 /* ---------- tokens ---------- */
 const C = {
@@ -21,7 +22,6 @@ const C = {
   surfaceFlat: "#10151E",
   raised: "#1A2230",
   border: "#1E2836",
-  borderStrong: "#2C3A4E",
   text: "#E8EDF5",
   sub: "#8FA0B5",
   mute: "#5C6B80",
@@ -55,6 +55,18 @@ const microPill = (color: string): React.CSSProperties => ({
   color, border: `1px solid ${color}55`, borderRadius: 5, padding: "1.5px 6px",
   textTransform: "uppercase", whiteSpace: "nowrap",
 });
+/** Filled pill — the "alive" status treatment from the reference mockups. */
+const fillPill = (color: string): React.CSSProperties => ({
+  fontFamily: sans, fontSize: 10.5, fontWeight: 600, letterSpacing: ".04em",
+  color, background: `${color}22`, border: `1px solid ${color}44`, borderRadius: 6,
+  padding: "2px 8px", textTransform: "capitalize", whiteSpace: "nowrap",
+});
+
+const sevColor = (s: string) =>
+  s === "critical" ? C.critical : s === "high" ? C.high : s === "medium" ? C.watchC : C.info;
+const regStatusColor = (s?: string | null) =>
+  ["effective", "enforcement"].includes(s ?? "") ? C.positive
+    : s === "signed" ? C.high : s === "passed" ? C.watchC : C.info;
 
 function impactColor(s: number) {
   return s >= 70 ? C.critical : s >= 50 ? C.high : s >= 30 ? C.watchC : C.info;
@@ -88,6 +100,14 @@ function ConfDots({ level }: { level: string }) {
   );
 }
 
+/** Item avatar: org logo when an org entity/source matches, else jurisdiction flag. */
+function ItemAvatar({ item }: { item: ItemOut }) {
+  const entityOrg = item.entities.map((e) => orgFor(e.name)).find(Boolean);
+  if (entityOrg) return <OrgAvatar name={item.entities.find((e) => orgFor(e.name))!.name} />;
+  if (item.jurisdiction_code) return <FlagChip code={item.jurisdiction_code} size={24} title={item.jurisdiction_code} />;
+  return <OrgAvatar name={item.source_name} />;
+}
+
 function ItemRowA({ item }: { item: ItemOut }) {
   return (
     <div style={{
@@ -96,7 +116,7 @@ function ItemRowA({ item }: { item: ItemOut }) {
     }}
       onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(98,139,255,.05)")}
       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-      <ImpactRing score={item.impact_score} />
+      <span style={{ marginTop: 1 }}><ItemAvatar item={item} /></span>
       <div style={{ minWidth: 0, flex: 1 }}>
         <p style={{ fontFamily: sans, fontSize: 13.5, fontWeight: 550, color: C.text, lineHeight: 1.35, margin: 0 }}>
           {item.title.replace(/^DEMO: /, "")}
@@ -106,7 +126,6 @@ function ItemRowA({ item }: { item: ItemOut }) {
           {item.categories.slice(0, 2).map((c) => (
             <span key={c} style={microPill(C.mute)}>{c}</span>
           ))}
-          {item.jurisdiction_code && <span style={microPill(C.info)}>{item.jurisdiction_code}</span>}
           {item.is_demo && <span style={{ ...microPill(C.mute), borderStyle: "dashed" }}>demo</span>}
           <ConfDots level={item.confidence} />
           <span style={{ fontFamily: mono, fontSize: 10.5, color: C.mute, marginLeft: "auto" }}>
@@ -114,6 +133,7 @@ function ItemRowA({ item }: { item: ItemOut }) {
           </span>
         </div>
       </div>
+      <ImpactRing score={item.impact_score} />
     </div>
   );
 }
@@ -134,30 +154,35 @@ export default function DirectionA() {
   const spark = sparkSeries(d.feed, 14);
 
   const kpis = [
-    { label: "High impact", value: d.summary?.high_impact ?? 0, tone: C.critical, delta: "+3 vs prior wk" },
-    { label: "Total changes", value: d.summary?.total_changes ?? 0, tone: C.accent, delta: "7-day window" },
-    { label: "New incidents", value: d.summary?.new_incidents ?? 0, tone: C.high, delta: "monitored feeds" },
-    { label: "Opportunities", value: d.summary?.new_opportunities ?? 0, tone: C.positive, delta: "training & events" },
+    { label: "High impact", value: d.summary?.high_impact ?? 0, tone: C.critical, icon: ShieldAlert, delta: "see what's new" },
+    { label: "Total changes", value: d.summary?.total_changes ?? 0, tone: C.accent, icon: Activity, delta: "7-day window" },
+    { label: "New incidents", value: d.summary?.new_incidents ?? 0, tone: C.high, icon: AlertTriangle, delta: "monitored feeds" },
+    { label: "Opportunities", value: d.summary?.new_opportunities ?? 0, tone: C.positive, icon: GraduationCap, delta: "training & events" },
   ];
+
+  const stdCounts = ["final", "updated", "draft"].map((s) => ({
+    s, n: d.standards.filter((x) => x.standard?.status === s).length,
+  }));
+  const stdOther = d.standards.length - stdCounts.reduce((a, x) => a + x.n, 0);
+
+  const publisherOf = (e: EntityOut) => e.standard?.publisher ?? "Other";
 
   return (
     <div style={{ minHeight: "100vh", background: `radial-gradient(1200px 500px at 70% -10%, rgba(98,139,255,.07), transparent), ${C.bg}`, fontFamily: sans, color: C.text }}>
       {/* Prototype banner */}
       <div style={{ background: C.accentSoft, borderBottom: `1px solid ${C.border}`, padding: "6px 16px", fontFamily: mono, fontSize: 11, color: C.accent, display: "flex", justifyContent: "space-between" }}>
-        <span>PROTOTYPE — DIRECTION A · REFINED INTELLIGENCE DASHBOARD</span>
+        <span>PROTOTYPE — DIRECTION A · REV 2 (OWNER FEEDBACK APPLIED)</span>
         <Link to="/design" style={{ color: C.accent }}>← All directions</Link>
       </div>
 
       <div style={{ display: "flex" }}>
         {/* Sidebar */}
         <aside style={{ width: 218, minHeight: "calc(100vh - 30px)", borderRight: `1px solid ${C.border}`, background: "rgba(16,21,30,.6)", padding: "18px 10px", flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 10px 18px" }}>
-            <div style={{ width: 30, height: 30, borderRadius: 8, background: `linear-gradient(135deg, ${C.accent}, #3D5FCC)`, display: "grid", placeItems: "center", boxShadow: "0 4px 14px rgba(98,139,255,.35)" }}>
-              <Radar size={16} color="#fff" />
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px 18px" }}>
+            <RadarLogo size={34} accent={C.accent} />
             <div>
-              <div style={{ fontSize: 13, fontWeight: 650, letterSpacing: ".02em" }}>Governance Radar</div>
-              <div style={{ fontFamily: mono, fontSize: 9, color: C.sub, letterSpacing: ".14em" }}>INTELLIGENCE</div>
+              <div style={{ fontSize: 13, fontWeight: 650, letterSpacing: ".02em" }}>AI Governance</div>
+              <div style={{ fontFamily: mono, fontSize: 9.5, color: C.accent, letterSpacing: ".26em" }}>RADAR</div>
             </div>
           </div>
           {NAV.map(({ icon: Icon, label, active }) => (
@@ -183,13 +208,16 @@ export default function DirectionA() {
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
             <div>
-              <h1 style={{ fontSize: 20, fontWeight: 650, margin: 0, letterSpacing: "-.01em" }}>Intelligence Overview</h1>
-              <p style={{ fontFamily: mono, fontSize: 11, color: C.mute, margin: "3px 0 0" }}>
-                7-DAY WINDOW · {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }).toUpperCase()}
+              <h1 style={{ fontSize: 20, fontWeight: 650, margin: 0, letterSpacing: "-.01em" }}>AI Governance Intelligence</h1>
+              <p style={{ fontSize: 12, color: C.sub, margin: "3px 0 0" }}>
+                Your command center for AI governance, risk, and policy developments.
               </p>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, background: C.surfaceFlat, border: `1px solid ${C.border}`, borderRadius: 9, padding: "7px 12px", width: 260 }}>
+              <span style={{ fontFamily: mono, fontSize: 11, color: C.mute }}>
+                {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, background: C.surfaceFlat, border: `1px solid ${C.border}`, borderRadius: 9, padding: "7px 12px", width: 240 }}>
                 <Search size={13} color={C.mute} />
                 <span style={{ fontSize: 12, color: C.mute }}>Search intelligence…</span>
                 <span style={{ marginLeft: "auto", fontFamily: mono, fontSize: 10, color: C.mute, border: `1px solid ${C.border}`, borderRadius: 4, padding: "1px 5px" }}>/</span>
@@ -197,21 +225,29 @@ export default function DirectionA() {
             </div>
           </div>
 
-          {/* KPIs */}
+          {/* KPIs — tinted "alive" cards */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
             {kpis.map((k) => (
-              <div key={k.label} style={{ ...card, padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div>
-                  <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: ".12em", color: C.sub, textTransform: "uppercase" }}>{k.label}</div>
-                  <div style={{ fontFamily: sans, fontSize: 30, fontWeight: 650, letterSpacing: "-.02em", marginTop: 4, color: k.value > 0 ? C.text : C.mute, fontVariantNumeric: "tabular-nums" }}>
+              <div key={k.label} style={{
+                borderRadius: 12, padding: "13px 16px",
+                background: `linear-gradient(135deg, ${k.tone}1C 0%, ${k.tone}08 55%, transparent 100%), ${C.surfaceFlat}`,
+                border: `1px solid ${k.tone}3D`,
+                boxShadow: C.shadow,
+                display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+              }}>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <span style={{ fontFamily: mono, fontSize: 30, fontWeight: 600, letterSpacing: "-.02em", color: k.value > 0 ? k.tone : C.mute, fontVariantNumeric: "tabular-nums", lineHeight: 1.15 }}>
                     {k.value}
-                  </div>
-                  <div style={{ fontSize: 10.5, color: C.mute, marginTop: 2 }}>{k.delta}</div>
+                  </span>
+                  <span>
+                    <span style={{ display: "block", fontSize: 12.5, fontWeight: 600, color: C.text, marginTop: 3 }}>{k.label}</span>
+                    <span style={{ display: "block", fontSize: 10.5, color: C.sub, marginTop: 1 }}>{k.delta}</span>
+                  </span>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 4, background: k.tone, display: "inline-block", boxShadow: `0 0 8px ${k.tone}66` }} />
-                  <div style={{ marginTop: 14, opacity: .8 }}>
-                    <Sparkline data={spark} width={72} height={24} stroke={k.tone} fill={`${k.tone}18`} />
+                  <k.icon size={15} color={k.tone} style={{ opacity: .9 }} />
+                  <div style={{ marginTop: 8, opacity: .85 }}>
+                    <Sparkline data={spark} width={64} height={20} stroke={k.tone} fill={`${k.tone}18`} />
                   </div>
                 </div>
               </div>
@@ -230,24 +266,27 @@ export default function DirectionA() {
 
             <section style={card}>
               <div style={cardHead}>
-                <span style={headTitle}><span style={{ width: 3, height: 14, borderRadius: 2, background: C.accent }} />Global Regulatory Activity</span>
+                <span style={headTitle}><span style={{ width: 3, height: 14, borderRadius: 2, background: C.accent }} />Global AI Regulatory Heat Map</span>
                 <span style={{ fontFamily: mono, fontSize: 10, color: C.mute, textTransform: "uppercase", letterSpacing: ".08em" }}>Tracked regulations</span>
               </div>
               <div style={{ padding: "6px 10px 2px" }}>
-                <ProtoMap rows={d.map} height={300} style={{
+                <ProtoMap rows={d.map} height={292} style={{
                   ocean: "transparent",
-                  land: "#151C28",
+                  land: "#161D2A",
                   landBorder: "#0B0F16",
-                  ramp: ["#1D3A5F", "#2A5A96", "#3D7BC4", "#628BFF"],
-                  marker: "#9DB8FF",
+                  ramp: ["#20304A", "#28405F", "#31517A"],
+                  dotColor: (v, max) => (v >= max * 0.66 ? C.critical : v >= max * 0.33 ? C.high : C.emerging),
                 }} />
               </div>
-              <div style={{ display: "flex", gap: 14, padding: "8px 16px 12px", alignItems: "center" }}>
-                <span style={{ fontFamily: mono, fontSize: 10, color: C.mute }}>0</span>
-                <div style={{ flex: "0 0 120px", height: 6, borderRadius: 3, background: `linear-gradient(90deg, #1D3A5F, #628BFF)` }} />
-                <span style={{ fontFamily: mono, fontSize: 10, color: C.mute }}>8</span>
+              <div style={{ display: "flex", gap: 12, padding: "8px 16px 12px", alignItems: "center" }}>
+                {[["High", C.critical], ["Medium", C.high], ["Emerging", C.emerging]].map(([label, col]) => (
+                  <span key={label} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 10.5, color: C.sub }}>
+                    <span style={{ width: 7, height: 7, borderRadius: 4, background: col as string, boxShadow: `0 0 6px ${col}88` }} />
+                    {label}
+                  </span>
+                ))}
                 <span style={{ fontSize: 11, color: C.sub, marginLeft: "auto" }}>
-                  {d.map.filter((r) => r.regulations > 0).length} active jurisdictions · EU activity applied to member states
+                  {d.map.filter((r) => r.regulations > 0).length} active jurisdictions · EU activity applied to members
                 </span>
               </div>
             </section>
@@ -258,16 +297,19 @@ export default function DirectionA() {
             <section style={card}>
               <div style={cardHead}>
                 <span style={headTitle}><span style={{ width: 3, height: 14, borderRadius: 2, background: C.high }} />AI Incidents</span>
-                <span style={{ fontFamily: mono, fontSize: 10.5, color: C.mute }}>{d.incidents.length} tracked</span>
+                <span style={{ ...fillPill(C.critical), textTransform: "uppercase", fontSize: 9.5 }}>New</span>
               </div>
               {d.incidents.slice(0, 4).map((inc) => (
-                <div key={inc.id} style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`, cursor: "pointer" }}>
-                  <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 4 }}>
-                    <span style={microPill(inc.severity === "critical" ? C.critical : inc.severity === "high" ? C.high : C.watchC)}>{inc.severity}</span>
-                    <span style={microPill(C.mute)}>{inc.fact_status.replace("_", " ")}</span>
-                    <span style={{ fontFamily: mono, fontSize: 10, color: C.mute, marginLeft: "auto" }}>{rel(inc.reported_at)}</span>
+                <div key={inc.id} style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`, cursor: "pointer", display: "flex", gap: 11 }}>
+                  <IncidentIcon category={inc.category} tone={sevColor(inc.severity)} />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <p style={{ fontSize: 12.5, fontWeight: 550, color: C.text, margin: 0, lineHeight: 1.3 }}>{inc.title}</p>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 4 }}>
+                      <span style={fillPill(sevColor(inc.severity))}>{inc.severity}</span>
+                      <span style={{ fontSize: 10.5, color: C.mute }}>{inc.fact_status.replace(/_/g, " ")}</span>
+                      <span style={{ fontFamily: mono, fontSize: 10, color: C.mute, marginLeft: "auto" }}>{rel(inc.reported_at)}</span>
+                    </div>
                   </div>
-                  <p style={{ fontSize: 12.5, fontWeight: 500, color: C.text, margin: 0, lineHeight: 1.3 }}>{inc.title}</p>
                 </div>
               ))}
             </section>
@@ -275,19 +317,23 @@ export default function DirectionA() {
             <section style={card}>
               <div style={cardHead}>
                 <span style={headTitle}><span style={{ width: 3, height: 14, borderRadius: 2, background: C.info }} />Standards Watch</span>
-                <span style={{ fontFamily: mono, fontSize: 10.5, color: C.mute }}>{d.standards.length} tracked</span>
+                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Donut size={34} stroke={6} centerLabel={`${d.standards.length}`} segments={[
+                    { value: stdCounts[0].n, color: C.positive },
+                    { value: stdCounts[1].n, color: C.high },
+                    { value: stdCounts[2].n, color: C.watchC },
+                    { value: stdOther, color: C.mute },
+                  ]} />
+                </span>
               </div>
-              {d.standards.slice(0, 4).map((s) => (
-                <div key={s.slug} style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{
-                    width: 34, height: 34, borderRadius: 8, background: C.raised, display: "grid", placeItems: "center",
-                    fontFamily: mono, fontSize: 8.5, color: C.sub, border: `1px solid ${C.border}`,
-                  }}>{s.standard?.publisher.slice(0, 4)}</div>
+              {d.standards.slice(0, 4).map((e) => (
+                <div key={e.slug} style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 10 }}>
+                  <OrgAvatar name={`${publisherOf(e)} ${e.name}`} size={28} />
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <p style={{ fontSize: 12.5, fontWeight: 500, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</p>
-                    <p style={{ fontFamily: mono, fontSize: 10, color: C.mute, margin: "2px 0 0" }}>{fmtDate(s.standard?.last_updated_at ?? s.standard?.published_at)}</p>
+                    <p style={{ fontSize: 12.5, fontWeight: 550, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{e.name}</p>
+                    <p style={{ fontFamily: mono, fontSize: 10, color: C.mute, margin: "2px 0 0" }}>{fmtDate(e.standard?.last_updated_at ?? e.standard?.published_at)}</p>
                   </div>
-                  <span style={microPill(s.standard?.status === "updated" ? C.high : C.positive)}>{s.standard?.status}</span>
+                  <span style={fillPill(e.standard?.status === "updated" ? C.high : C.positive)}>{e.standard?.status}</span>
                 </div>
               ))}
             </section>
@@ -297,18 +343,18 @@ export default function DirectionA() {
                 <span style={headTitle}><span style={{ width: 3, height: 14, borderRadius: 2, background: C.emerging }} />Regulatory Pulse</span>
                 <span style={{ fontFamily: mono, fontSize: 10.5, color: C.mute }}>{d.regulations.length} tracked</span>
               </div>
-              {d.regulations.slice(0, 4).map((r) => (
-                <div key={r.slug} style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontFamily: mono, fontSize: 10, color: C.sub, width: 46, flexShrink: 0 }}>{r.jurisdiction_code}</span>
-                  <p style={{ fontSize: 12.5, fontWeight: 500, margin: 0, flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</p>
-                  <span style={microPill(r.regulation?.status === "effective" || r.regulation?.status === "enforcement" ? C.critical : r.regulation?.status === "signed" ? C.high : C.info)}>
-                    {r.regulation?.status}
-                  </span>
+              {d.regulations.slice(0, 5).map((r) => (
+                <div key={r.slug} style={{ padding: "9px 16px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 10 }}>
+                  <FlagChip code={r.jurisdiction_code ?? "GLOBAL"} size={22} title={r.jurisdiction_code ?? undefined} />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <p style={{ fontSize: 12.5, fontWeight: 550, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</p>
+                    <p style={{ fontFamily: mono, fontSize: 9.5, color: C.mute, margin: "1px 0 0" }}>
+                      {r.jurisdiction_code} · eff. {fmtDate(r.regulation?.effective_at)}
+                    </p>
+                  </div>
+                  <span style={fillPill(regStatusColor(r.regulation?.status))}>{r.regulation?.status}</span>
                 </div>
               ))}
-              <div style={{ padding: "10px 16px", fontSize: 11, color: C.mute }}>
-                Verified against official sources · staleness surfaced per record
-              </div>
             </section>
           </div>
 
@@ -316,7 +362,10 @@ export default function DirectionA() {
           <section style={{ ...card, marginTop: 14 }}>
             <div style={cardHead}>
               <span style={headTitle}><span style={{ width: 3, height: 14, borderRadius: 2, background: C.positive }} />Intelligence Feed</span>
-              <span style={{ fontFamily: mono, fontSize: 10.5, color: C.mute }}>LIVE · {d.feed.length} recent</span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: mono, fontSize: 10.5, color: C.positive }}>
+                <span style={{ width: 6, height: 6, borderRadius: 3, background: C.positive, boxShadow: `0 0 6px ${C.positive}` }} />
+                LIVE · {d.feed.length} recent
+              </span>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }}>
               {d.feed.slice(0, 6).map((i) => <ItemRowA key={i.id} item={i} />)}

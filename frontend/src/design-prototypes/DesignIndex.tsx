@@ -9,9 +9,9 @@ const wrap: React.CSSProperties = {
 
 const DIRECTIONS = [
   {
-    to: "/design/a", code: "A", name: "Refined Intelligence Dashboard",
+    to: "/design/a", code: "A", name: "Refined Intelligence Dashboard — REV 2 ★ owner-preferred",
     tone: "#628BFF",
-    blurb: "The current concept, executed to a premium commercial standard: deep navy, top-lit cards, impact rings, sparklines, refined micro-pills.",
+    blurb: "Premium polish of the current concept, now with the 'alive' layer: animated radar mark, jurisdiction flag chips, org avatars (NIST/ISO/OWASP/MITRE), tinted KPI cards, glowing map markers, filled status pills.",
   },
   {
     to: "/design/b", code: "B", name: "Modern Intelligence Terminal",
