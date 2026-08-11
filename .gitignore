@@ -8,6 +8,10 @@ AI_Governance_Radar_Product_Design_Development_Spec.md
 *.pem
 *.key
 
+# Local AI-tooling / editor session config (machine-specific paths)
+.claude/
+*.local.json
+
 # Python
 __pycache__/
 *.py[cod]
@@ -46,7 +50,14 @@ Desktop.ini
 .vscode/
 *.swp
 
+# Test/coverage output
+frontend/coverage/
+playwright-report/
+test-results/
+
 # Logs / temp
 *.log
 tmp/
 .cache/
+*.tmp
+*.bak

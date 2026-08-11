@@ -1,109 +1,145 @@
-# AI Governance Radar
+# 🛰️ AI Governance Radar
 
-Open-source, local-first **AI Governance Intelligence Dashboard**. It monitors AI
-regulation, standards & frameworks, incidents, and AI security developments, then
-surfaces **what changed and why it matters** — a radar, not a news feed.
+An open-source **AI Governance Intelligence Dashboard** that runs entirely on your own
+computer. It watches AI regulation, standards, incidents, and AI security developments,
+then shows you **what changed and why it matters** — a radar, not another news feed.
 
-- **Free & self-hostable** — one Python process, one SQLite file, zero cloud services
-- **Fully functional without any LLM or paid API key** (AI enrichment is a future,
-  optional, model-agnostic layer — local models included)
-- **Source-integrity first** — every regulatory fact is curated, evidence-linked, and
-  timestamped; ingestion detects changes but never invents legal facts
-- Dark, dense, professional intelligence-terminal UI
+Built for AI governance, risk, compliance, and security professionals — no developer
+background required to run it.
 
-## Quick start (Python)
+## ✨ Why you might want this
 
-Requirements: Python 3.12+, Node 20+ (build only).
+- 🆓 **Free and yours** — open source, runs on your machine, no account, no subscription
+- 🔌 **No AI subscription needed** — works completely without ChatGPT, Claude, or any
+  AI service. (Optional AI features may come later, and even then you'll choose your
+  own provider — including free local models.)
+- 🔒 **Private by default** — your watchlist and data never leave your computer
+- 📌 **Facts you can trust** — every regulation shows its official source, key dates,
+  a confidence level, and the date a human last verified it. The software never
+  invents legal facts.
+- 🖥️ **Made to scan** — a dark, information-dense dashboard you can read in one glance
+  over morning coffee
+
+## 🚀 Getting it running
+
+You'll copy and paste a few commands into a terminal. That's the extent of the
+technical skill required — promise.
+
+### Option 1 — Docker (easiest, if you have Docker Desktop installed)
 
 ```bash
-git clone <repo-url> && cd ai-governance-radar
+git clone <repo-url>
+cd ai-governance-radar
+docker compose up
+```
 
-# 1. Build the UI once
-cd frontend && npm install && npm run build && cd ..
+Then open **http://localhost:3000** in your browser. Done — the dashboard appears with
+starter data already loaded.
 
-# 2. Run the app (creates + seeds the database on first start)
+### Option 2 — Run it directly (needs Python 3.12+ and Node.js 20+)
+
+Think of it as two steps: **build the interface once**, then **start the app**.
+
+```bash
+git clone <repo-url>
+cd ai-governance-radar
+
+# Step 1: build the user interface (one time)
+cd frontend
+npm install
+npm run build
+cd ..
+
+# Step 2: start the app
 cd backend
 python -m venv .venv
-.venv\Scripts\activate            # Windows   (macOS/Linux: source .venv/bin/activate)
+.venv\Scripts\activate          # on Mac/Linux use:  source .venv/bin/activate
 pip install -e .
 python -m app.cli serve
 ```
 
-Open **http://127.0.0.1:8000** — dashboard, seeded regulations/standards/incidents,
-and API docs at `/api/docs`.
+Open **http://127.0.0.1:8000**. The app creates its database and loads starter
+content automatically the first time it runs.
 
-Pull fresh intelligence from the real sources (NIST, Federal Register, GOV.UK, arXiv,
-plus page-watch monitors):
+### 📡 Pulling in fresh intelligence
+
+The starter content gets you oriented. To fetch the latest real items from NIST, the
+US Federal Register, GOV.UK, arXiv, and other monitored sources:
 
 ```bash
 python -m app.cli ingest --force
-python -m app.cli status
 ```
 
-Set `SCHEDULER_ENABLED=true` (see `.env.example`) to poll sources automatically while
-the app runs.
+Want it to check sources automatically while the app is running? Copy `.env.example`
+to a file named `.env` and change `SCHEDULER_ENABLED=false` to `true`. (The `.env`
+file is just a plain-text settings file — open it in any text editor.)
 
-## Quick start (Docker)
+## 🧭 What's inside
 
-```bash
-docker compose up
-# open http://localhost:3000
-```
+| | Feature | What it gives you |
+|---|---|---|
+| 📊 | **Dashboard** | High-impact counts, top developments, a world map of regulatory activity, incidents, and standards — all on one screen |
+| ☀️ | **Morning Brief** | "What happened since I last looked?" — generated from your data, no AI involved |
+| 🏛️ | **Regulatory Radar** | Tracked AI laws (Colorado AI Act, EU AI Act, and more) with status, key dates, penalties, and links to official sources |
+| 📐 | **Standards** | NIST AI RMF, ISO/IEC 42001, OWASP, MITRE ATLAS — versions, status, and what changed |
+| ⚠️ | **Incidents** | Real, documented AI incidents written up like intelligence reports, with severity and "confirmed vs. alleged" labels |
+| 👁️ | **Watchlist** | Watch any regulation, standard, topic, or place — the app tells you what changed since your last visit |
+| 🔍 | **Search** | One search box across everything, results grouped by type |
+| 🩺 | **Source health** | See exactly which feeds are working, when they last succeeded, and why one failed |
+| 📤 | **Import/export** | Take your watchlist and settings with you — no lock-in, ever |
 
-The compose file wraps a single image (UI + API + scheduler) with a persistent volume
-for the database.
+Starter/demo entries are always clearly labeled **DEMO DATA** so you never mistake
+them for live intelligence.
 
-## What's inside
+## 🧠 How it works (the friendly version)
 
-| Area | Feature |
-|---|---|
-| Dashboard | KPI cards, Top Developments, global regulatory activity map, incidents, standards watch |
-| Morning Brief | Deterministic "what happened since I last looked" — no LLM involved |
-| Regulatory Radar | Curated regulation records with lifecycle status, key dates, penalties, verification timestamps; table + timeline views |
-| Standards | NIST / ISO / OWASP / MITRE lifecycle tracking with official sources |
-| Incidents | Curated AI incident intelligence with severity, fact status, framework cross-links |
-| Watchlist | Watch any entity/source/jurisdiction/category; per-target change status since your last review |
-| Search | Full-text (SQLite FTS5) across items, entities, incidents — grouped results |
-| Ingestion | RSS/Atom + JSON APIs + hash-based page-watch, all through a hardened SafeFetcher (SSRF/DNS-rebinding/size/timeout defenses); per-source health & run history |
-| Portability | JSON config import/export, CSV item export |
+- Everything lives in **one program plus one database file** on your computer. The
+  database is [SQLite](https://www.sqlite.org/) — no database server to install or
+  manage; backing up means copying a single file.
+- On a schedule (or when you click "Ingest"), the app **checks official feeds** —
+  government sites, standards bodies, research archives — and files anything new.
+- Every incoming item is automatically **sorted, de-duplicated, and scored** for
+  impact and confidence using transparent rules you can inspect. Click any item and
+  it shows you the math behind its score.
+- Important distinction: **regulations, standards, and incidents are curated
+  records** — maintained by humans with cited sources. The automatic feed-watcher can
+  flag "something changed here, take a look," but it never rewrites legal facts on
+  its own.
+- The app is careful on the network, too: it only talks to the sources you've
+  enabled, identifies itself honestly, and has guardrails against fetching anything
+  it shouldn't (the security-minded can read [SECURITY.md](SECURITY.md)).
 
-Demo records are explicitly badged `DEMO DATA` and can be filtered out or disabled
-(`DEMO_DATA=false`).
+Want the deep technical version? See [ARCHITECTURE.md](ARCHITECTURE.md),
+[DATA_MODEL.md](DATA_MODEL.md), and [DECISIONS.md](DECISIONS.md).
 
-## Architecture (short version)
+## ⚙️ Settings & customization
 
-React + TypeScript SPA (Vite, Tailwind) served as static files by a FastAPI backend
-with SQLite (WAL + FTS5). Ingestion is a deterministic pipeline: fetch → normalize →
-dedupe/cluster → rule-based classify → change-detect → transparent impact/confidence
-scoring. No queue, no search engine, no ORM magic, no LLM. Full detail:
-[ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_MODEL.md](DATA_MODEL.md) ·
-[DECISIONS.md](DECISIONS.md) · [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) ·
-[TEST_PLAN.md](TEST_PLAN.md).
+- Most things are configurable **inside the app** — turn sources on/off, change how
+  often they're checked, add your own sources (RSS feeds or pages to watch).
+- Sources are defined in a simple list file
+  ([`data/sources/sources.yaml`](data/sources/sources.yaml)) — adding one is editing
+  text, not writing code.
+- Optional settings live in `.env` (copy `.env.example` to start). The app runs fine
+  with no configuration at all.
 
-## Configuration
+## 🔐 Security & privacy
 
-Copy `.env.example` to `.env` and adjust. Everything has working defaults; the app
-runs with no configuration at all. Sources are data, not code — edit
-`data/sources/sources.yaml` or add sources in Settings.
+Designed for one person on their own machine: no login system, and the app only
+listens on your computer (localhost) unless you deliberately change that. Don't
+expose it to the open internet as-is. Details: [SECURITY.md](SECURITY.md).
 
-## Security
+## 🤝 Contributing
 
-Single-user, no auth (by design, V1): keep it on localhost. Details and reporting:
-[SECURITY.md](SECURITY.md).
+Contributions welcome — especially **new verified sources** (you don't need to code
+to propose one!). Start with [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Contributing
+## ⚖️ The obligatory disclaimer
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Source additions especially welcome —
-verified feed URLs with attribution notes.
+AI Governance Radar is an information tool, **not legal advice**. Every regulatory
+fact shows its source, dates, confidence, and when it was last verified — always
+check the linked official source before acting. Map data:
+[Natural Earth](https://www.naturalearthdata.com/) (public domain).
 
-## Disclaimer
-
-This application is an information and intelligence tool. **It is not legal advice.**
-Regulatory information is presented with source, dates, jurisdiction, confidence, and
-a human-verification timestamp; always verify against the linked official sources.
-Map data: [Natural Earth](https://www.naturalearthdata.com/) (public domain) via the
-`world-atlas` package.
-
-## License
+## 📄 License
 
 See [LICENSE](LICENSE).
