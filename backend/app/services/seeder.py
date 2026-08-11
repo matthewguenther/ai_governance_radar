@@ -141,7 +141,7 @@ def seed_entities(db: Session, path: Path | None = None) -> int:
             entity.current_status = reg.status
             db.merge(reg)
 
-        elif row["type"] == "standard":
+        elif row["type"] in ("standard", "framework"):
             std_data = row.get("standard") or {}
             _require(bool(std_data.get("official_source_url")),
                      f"{row['slug']}: standard requires official_source_url")

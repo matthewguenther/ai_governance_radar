@@ -14,7 +14,10 @@ import { useMemo, useState } from "react";
 import { geoNaturalEarth1, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { FeatureCollection, Geometry } from "geojson";
-import world from "world-atlas/countries-110m.json";
+// 50m rather than 110m: the 110m Natural Earth extract contains only 177
+// countries and omits micro-states — Singapore, one of the most active AI
+// governance jurisdictions, has no polygon in it at all.
+import world from "world-atlas/countries-50m.json";
 import { useNavigate } from "react-router-dom";
 
 import { InfoTip } from "../ui/InfoTip";
@@ -30,9 +33,11 @@ const METRIC_LABELS: Record<Metric, string> = {
 
 const METRIC_HELP: Record<Metric, string> = {
   instruments:
-    "How many laws, frameworks, and national standards this instance tracks for each " +
-    "jurisdiction — a measure of your coverage, not of how regulated a country is. " +
-    "Thin coverage means we should add records, not that the country is inactive.",
+    "Laws, frameworks, and national standards tracked for each jurisdiction. Colour " +
+    "shows the strongest instrument type: red where binding law applies, violet where " +
+    "governance is voluntary framework or guidance only — the distinction that decides " +
+    "whether you have a compliance obligation or a best-practice expectation. Counts " +
+    "reflect this instance's coverage, so gaps mean records to add, not inactivity.",
   recent_items:
     "How many items were collected for each jurisdiction in the last 30 days. This " +
     "reflects both real-world activity and which sources you have enabled.",
@@ -42,10 +47,16 @@ const LAND = "#161D2A";
 const LAND_ACTIVE = ["#20304A", "#28405F", "#31517A"];
 const BORDER = "#0B0F16";
 
-const LEGEND: [string, string][] = [
+/** For the instruments metric the colour answers "what kind of obligation applies
+ * here?" — far more useful to a governance professional than raw volume. */
+const INSTRUMENT_LEGEND: [string, string][] = [
+  ["Binding law", T.critical],
+  ["Framework / guidance", T.emerging],
+];
+const VOLUME_LEGEND: [string, string][] = [
   ["High", T.critical],
   ["Medium", T.high],
-  ["Emerging", T.emerging],
+  ["Low", T.emerging],
 ];
 
 export function WorldMap({ rows }: { rows: MapRow[] }) {
@@ -82,8 +93,12 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
     const idx = Math.min(LAND_ACTIVE.length - 1, Math.floor((value / max) * LAND_ACTIVE.length));
     return LAND_ACTIVE[Math.max(0, idx)];
   };
-  const dotColor = (value: number) =>
-    value >= max * 0.66 ? T.critical : value >= max * 0.33 ? T.high : T.emerging;
+  const dotColor = (row: MapRow) => {
+    if (metric === "instruments") return row.binding > 0 ? T.critical : T.emerging;
+    const value = row.recent_items;
+    return value >= max * 0.66 ? T.critical : value >= max * 0.33 ? T.high : T.emerging;
+  };
+  const legend = metric === "instruments" ? INSTRUMENT_LEGEND : VOLUME_LEGEND;
 
   const open = (row: MapRow) =>
     navigate(
@@ -109,7 +124,7 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
           <InfoTip content={METRIC_HELP[metric]} />
         </label>
         <div className="flex items-center gap-3" aria-hidden>
-          {LEGEND.map(([label, col]) => (
+          {legend.map(([label, col]) => (
             <span key={label} className="inline-flex items-center gap-1.5 text-[10.5px] text-tx-secondary">
               <span
                 className="inline-block h-[7px] w-[7px] rounded-full"
@@ -160,7 +175,7 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
         {rows.filter((r) => r[metric] > 0 && r.iso_numeric).map((r) => {
           const c = centroids.get(r.iso_numeric!.padStart(3, "0"));
           if (!c) return null;
-          const col = dotColor(r[metric]);
+          const col = dotColor(r);
           const radius = 2.5 + 2.5 * Math.sqrt(r[metric] / max);
           return (
             <g key={`dot-${r.code}`} pointerEvents="none">
@@ -181,7 +196,11 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
           {hover.row ? (
             <>
               <p className="text-tx-secondary">
-                {hover.row.instruments} tracked instrument{hover.row.instruments === 1 ? "" : "s"}
+                {hover.row.binding > 0
+                  ? `${hover.row.binding} binding law${hover.row.binding === 1 ? "" : "s"}`
+                  : "No binding law tracked"}
+                {hover.row.guidance > 0 &&
+                  ` · ${hover.row.guidance} framework${hover.row.guidance === 1 ? "" : "s"}/guidance`}
               </p>
               <p className="text-tx-secondary">{hover.row.recent_items} items, last 30 days</p>
               {hover.row.via.includes("EU") && (
@@ -200,7 +219,13 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
         <span className="text-tx-secondary">Coverage map</span> — {METRIC_LABELS[metric]} in this
         instance, not a ranking of national AI regulation.{" "}
         {active.length
-          ? active.map((r) => `${r.name} ${r[metric]}`).join(" · ")
+          ? active
+              .map((r) =>
+                metric === "instruments"
+                  ? `${r.name} ${r.binding > 0 ? "law" : "guidance"} ${r.instruments}`
+                  : `${r.name} ${r.recent_items}`,
+              )
+              .join(" · ")
           : "no tracked activity yet"}
       </p>
     </div>

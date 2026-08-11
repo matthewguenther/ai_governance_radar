@@ -211,6 +211,10 @@ export interface MapRow {
   iso_numeric: string | null;
   /** Tracked governance instruments (regulations, frameworks, national standards). */
   instruments: number;
+  /** Instruments with legal force (laws, regulations). */
+  binding: number;
+  /** Voluntary frameworks, standards, and guidance. */
+  guidance: number;
   recent_items: number;
   /** Where clicking should navigate (EU member states point at "EU"). */
   link_code: string;

@@ -81,12 +81,14 @@ def map_data(db: Session = Depends(get_db)) -> list[dict]:
     """
     recent_cutoff = datetime.now(UTC) - timedelta(days=30)
 
-    # All tracked governance instruments with a jurisdiction (not just regulations —
-    # e.g. Singapore's Model AI Governance Framework is a framework record).
+    # All tracked governance instruments with a jurisdiction, split by whether they
+    # are binding law or voluntary guidance. Most AI governance worldwide is soft
+    # law: Singapore governs through the Model AI Governance Framework rather than a
+    # statute, so counting only regulations would wrongly show it as ungoverned.
     instrument_rows = db.execute(
-        select(Entity.jurisdiction_code, func.count(Entity.id))
+        select(Entity.jurisdiction_code, Entity.entity_type, func.count(Entity.id))
         .where(Entity.entity_type.in_(("regulation", "standard", "framework")))
-        .group_by(Entity.jurisdiction_code)
+        .group_by(Entity.jurisdiction_code, Entity.entity_type)
     ).all()
     item_rows = db.execute(
         select(Item.jurisdiction_code, func.count(Item.id))
@@ -109,16 +111,20 @@ def map_data(db: Session = Depends(get_db)) -> list[dict]:
                 "name": country.name,
                 "iso_numeric": country.iso_numeric,
                 "instruments": 0,
+                "binding": 0,     # laws/regulations with legal force
+                "guidance": 0,    # frameworks, standards, voluntary guidance
                 "recent_items": 0,
                 "link_code": country.code,
                 "via": [],
             },
         )
 
-    for code, count in instrument_rows:
+    for code, entity_type, count in instrument_rows:
         entry = entry_for(code)
         if entry:
             entry["instruments"] += count
+            key = "binding" if entity_type == "regulation" else "guidance"
+            entry[key] += count
     for code, count in item_rows:
         entry = entry_for(code)
         if entry:
@@ -134,11 +140,13 @@ def map_data(db: Session = Depends(get_db)) -> list[dict]:
                     j.code,
                     {
                         "code": j.code, "name": j.name, "iso_numeric": j.iso_numeric,
-                        "instruments": 0, "recent_items": 0,
-                        "link_code": j.code, "via": [],
+                        "instruments": 0, "binding": 0, "guidance": 0,
+                        "recent_items": 0, "link_code": j.code, "via": [],
                     },
                 )
                 member["instruments"] += eu["instruments"]
+                member["binding"] += eu["binding"]
+                member["guidance"] += eu["guidance"]
                 member["recent_items"] += eu["recent_items"]
                 member["via"].append("EU")
                 if member["link_code"] == j.code and not _has_own_records(db, j.code):

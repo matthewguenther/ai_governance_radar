@@ -346,5 +346,145 @@
       "related_frameworks": ["nist-ai-rmf"],
       "official_source_url": "https://aiverifyfoundation.sg/"
     }
+  },
+  {
+    "slug": "korea-ai-framework-act",
+    "name": "South Korea AI Framework Act",
+    "type": "regulation",
+    "jurisdiction": "KR",
+    "description": "Framework Act on the Development of Artificial Intelligence and Establishment of a Foundation for Trustworthiness — Asia's first comprehensive AI statute. Imposes obligations on 'high-impact' AI in critical sectors and labelling duties for generative AI output.",
+    "official_url": "https://www.msit.go.kr/eng/index.do",
+    "regulation": {
+      "government_level": "federal",
+      "status": "effective",
+      "status_label": "In force since January 22, 2026",
+      "effective_at": "2026-01-22",
+      "enforcement_authority": "Ministry of Science and ICT (MSIT)",
+      "covered_entities": "Providers and deployers of AI in South Korea, including certain overseas operators required to appoint a domestic representative.",
+      "risk_classification": "High-impact AI in critical sectors (healthcare, energy, public services) plus generative AI labelling duties.",
+      "applicability_notes": "Passed by the National Assembly in December 2024 and effective 22 January 2026. Primary legal text is Korean; verify details and enforcement decrees via MSIT before relying on this summary.",
+      "official_source_url": "https://www.loc.gov/item/global-legal-monitor/2026-02-20/south-korea-comprehensive-ai-legal-framework-takes-effect/",
+      "confidence": "medium",
+      "last_verified_at": "2026-08-11"
+    },
+    "events": [
+      {"type": "status_change", "occurred_at": "2026-01-22", "previous": "signed", "new": "effective", "summary": "AI Framework Act took effect — first comprehensive national AI statute in Asia.", "impact": 85}
+    ]
+  },
+  {
+    "slug": "china-genai-interim-measures",
+    "name": "China Interim Measures for Generative AI Services",
+    "type": "regulation",
+    "jurisdiction": "CN",
+    "description": "Interim Measures for the Management of Generative AI Services — binding rules from the Cyberspace Administration of China and six other agencies covering public-facing generative AI, including content controls, security assessment, and filing obligations.",
+    "official_url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+    "regulation": {
+      "government_level": "federal",
+      "status": "effective",
+      "status_label": "In force since August 15, 2023",
+      "effective_at": "2023-08-15",
+      "enforcement_authority": "Cyberspace Administration of China (CAC) and co-issuing agencies",
+      "covered_entities": "Providers of generative AI services offered to the public within mainland China.",
+      "risk_classification": "Public-facing generative AI services; algorithm filing and security assessment duties.",
+      "applicability_notes": "Sits alongside China's algorithm recommendation and deep synthesis provisions. Official text is Chinese; verify against the CAC source.",
+      "official_source_url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+      "confidence": "medium",
+      "last_verified_at": "2026-08-11"
+    },
+    "events": [
+      {"type": "status_change", "occurred_at": "2023-08-15", "previous": "signed", "new": "effective", "summary": "Interim Measures for Generative AI Services took effect.", "impact": 75}
+    ]
+  },
+  {
+    "slug": "brazil-pl-2338",
+    "name": "Brazil AI Bill (PL 2338/2023)",
+    "type": "regulation",
+    "jurisdiction": "BR",
+    "description": "Risk-based AI framework bill establishing rights, risk classifications, transparency duties, and an enforcement structure centred on the ANPD. Approved by the Federal Senate; still under consideration in the Chamber of Deputies.",
+    "official_url": "https://www25.senado.leg.br/web/atividade/materias/-/materia/157233",
+    "regulation": {
+      "government_level": "federal",
+      "status": "passed",
+      "status_label": "Passed Senate — pending in Chamber of Deputies",
+      "introduced_at": "2023-05-03",
+      "passed_at": "2024-12-10",
+      "enforcement_authority": "Proposed: ANPD (Autoridade Nacional de Proteção de Dados) as coordinating authority",
+      "covered_entities": "Proposed: developers, distributors, and deployers of AI systems in Brazil.",
+      "risk_classification": "Proposed risk tiers with excessive-risk prohibitions and high-risk obligations.",
+      "applicability_notes": "NOT YET LAW. Approved by the Senate on 10 December 2024 and under committee review in the Chamber of Deputies as of August 2026; text and obligations may change before enactment.",
+      "official_source_url": "https://www25.senado.leg.br/web/atividade/materias/-/materia/157233",
+      "confidence": "high",
+      "last_verified_at": "2026-08-11"
+    },
+    "events": [
+      {"type": "created", "occurred_at": "2023-05-03", "summary": "PL 2338/2023 introduced in the Federal Senate.", "impact": 55},
+      {"type": "status_change", "occurred_at": "2024-12-10", "previous": "introduced", "new": "passed", "summary": "Approved by the Federal Senate; sent to the Chamber of Deputies.", "impact": 70}
+    ]
+  },
+  {
+    "slug": "canada-genai-voluntary-code",
+    "name": "Canada Voluntary Code of Conduct on Generative AI",
+    "type": "framework",
+    "jurisdiction": "CA",
+    "description": "Voluntary Code of Conduct on the Responsible Development and Management of Advanced Generative AI Systems — signatory commitments on accountability, safety, fairness, transparency, and human oversight. Creates no new legal obligations.",
+    "official_url": "https://ised-isde.canada.ca/site/ised/en/voluntary-code-conduct-responsible-development-and-management-advanced-generative-ai-systems",
+    "standard": {
+      "publisher": "ISED Canada",
+      "status": "final",
+      "published_at": "2023-09-27",
+      "change_magnitude": "major",
+      "related_frameworks": ["nist-ai-rmf"],
+      "official_source_url": "https://ised-isde.canada.ca/site/ised/en/voluntary-code-conduct-responsible-development-and-management-advanced-generative-ai-systems"
+    }
+  },
+  {
+    "slug": "uk-pro-innovation-approach",
+    "name": "UK Pro-Innovation Approach to AI Regulation",
+    "type": "framework",
+    "jurisdiction": "GB",
+    "description": "UK government white paper setting a principles-based, regulator-led approach to AI rather than a single AI statute: existing regulators apply five cross-sector principles within their remits.",
+    "official_url": "https://www.gov.uk/government/publications/ai-regulation-a-pro-innovation-approach",
+    "standard": {
+      "publisher": "UK Government",
+      "status": "final",
+      "published_at": "2023-03-29",
+      "change_magnitude": "major",
+      "related_frameworks": [],
+      "official_source_url": "https://www.gov.uk/government/publications/ai-regulation-a-pro-innovation-approach"
+    }
+  },
+  {
+    "slug": "japan-ai-guidelines-business",
+    "name": "Japan AI Guidelines for Business",
+    "type": "framework",
+    "jurisdiction": "JP",
+    "description": "METI/MIC unified guidance for AI developers, providers, and business users — a risk-based, voluntary framework encouraging self-directed governance across the AI lifecycle.",
+    "official_url": "https://www.meti.go.jp/shingikai/mono_info_service/ai_shakai_jisso/pdf/20260331_12.pdf",
+    "standard": {
+      "publisher": "METI / MIC",
+      "version": "1.2",
+      "status": "updated",
+      "published_at": "2024-04-19",
+      "last_updated_at": "2026-03-31",
+      "change_magnitude": "minor",
+      "related_frameworks": ["nist-ai-rmf"],
+      "official_source_url": "https://www.meti.go.jp/shingikai/mono_info_service/ai_shakai_jisso/pdf/20260331_12.pdf"
+    }
+  },
+  {
+    "slug": "australia-voluntary-ai-safety-standard",
+    "name": "Australia Voluntary AI Safety Standard",
+    "type": "framework",
+    "jurisdiction": "AU",
+    "description": "Ten voluntary guardrails for organisations deploying AI, published by the Department of Industry, Science and Resources. Australia has no general AI statute; mandatory guardrails for high-risk settings remain under consideration.",
+    "official_url": "https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence",
+    "standard": {
+      "publisher": "DISR Australia",
+      "status": "final",
+      "published_at": "2024-09-05",
+      "change_magnitude": "major",
+      "related_frameworks": ["iso-42001", "nist-ai-rmf"],
+      "official_source_url": "https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence"
+    }
   }
 ]
