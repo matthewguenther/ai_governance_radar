@@ -41,6 +41,16 @@ All notable changes to this project. Dates are UTC.
 
 ## [Unreleased]
 
+### 2026-08-11 — V2 design research & direction (no implementation)
+- Researched reference interfaces (Bloomberg Terminal, FT/Origami, The Economist,
+  Our World in Data, Palantir Blueprint, SOC consoles) and critiqued the running V1
+  UI route-by-route in the browser.
+- Proposed the "Ink & Signal" visual direction in docs/design/V2-DESIGN-DIRECTION.md:
+  warm-ink palette, amber identity accent, domain-coded module language (preserving
+  the widget dashboard), serif/mono/sans typography, flat mono status tokens, impact
+  meters, terminal status strip, map restyle. Awaiting approval; DESIGN_SYSTEM.md V1
+  rules remain authoritative.
+
 ### 2026-08-11 — Skeptical architecture review (same day, second pass)
 - Recorded DEC-016…022 simplifications: asyncio loop replaces APScheduler; single
   process serves API + built SPA (one Docker image, compose optional not canonical);

@@ -1,5 +1,13 @@
 # Design System
 
+> **Note (2026-08-11):** A V2 visual direction — *"Ink & Signal"* (warm-ink surfaces,
+> amber identity accent, domain-coded module system, serif/mono/sans three-voice
+> typography, flat mono status tokens) — is **proposed** in
+> [docs/design/V2-DESIGN-DIRECTION.md](docs/design/V2-DESIGN-DIRECTION.md) and awaits
+> owner approval. Until approved, everything below remains the authoritative V1
+> system. The V2 direction preserves the widget/module dashboard concept, the
+> semantic color meanings, and all accessibility rules defined here.
+
 Dark-first intelligence terminal. Quality bar: professional intelligence product
 (Bloomberg-terminal / SOC-dashboard feel) — never an admin panel, RSS reader, or
 marketing site (§15, §91). Implemented as Tailwind theme tokens + shadcn/ui components
