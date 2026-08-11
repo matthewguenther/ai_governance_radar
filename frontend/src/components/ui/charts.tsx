@@ -1,5 +1,6 @@
 /** Small inline visualizations: sparkline, donut, impact ring, confidence dots. */
 
+import { CONFIDENCE_DEFS, IMPACT_EXPLAINER, impactBand } from "../../lib/definitions";
 import { T, impactColor } from "../../lib/tokens";
 
 export function Sparkline({ data, width = 64, height = 20, stroke, fill }: {
@@ -53,9 +54,11 @@ export function Donut({ segments, size = 34, stroke = 6, centerLabel }: {
 export function ImpactRing({ score }: { score: number }) {
   const r = 11, circ = 2 * Math.PI * r;
   const col = impactColor(score);
+  const band = impactBand(score);
   return (
-    <svg width={28} height={28} role="img" aria-label={`Impact score ${score} of 100`}
+    <svg width={28} height={28} role="img" aria-label={`Impact score ${score} of 100 — ${band.label}`}
       style={{ flexShrink: 0 }}>
+      <title>{`${band.label} — ${score}/100. ${band.meaning}\n\n${IMPACT_EXPLAINER}`}</title>
       <circle cx={14} cy={14} r={r} fill="none" stroke={T.bgRaised} strokeWidth={2.5} />
       <circle cx={14} cy={14} r={r} fill="none" stroke={col} strokeWidth={2.5}
         strokeDasharray={`${(score / 100) * circ} ${circ}`} strokeLinecap="round"
@@ -69,7 +72,7 @@ export function ImpactRing({ score }: { score: number }) {
 export function ConfDots({ level }: { level: string }) {
   const n = level === "high" ? 3 : level === "medium" ? 2 : 1;
   return (
-    <span title={`Confidence: ${level}`} aria-label={`Confidence ${level}`}
+    <span title={CONFIDENCE_DEFS[level] ?? `Confidence: ${level}`} aria-label={`Confidence ${level}`}
       style={{ display: "inline-flex", gap: 2.5, alignItems: "center" }}>
       {[0, 1, 2].map((i) => (
         <span key={i} style={{

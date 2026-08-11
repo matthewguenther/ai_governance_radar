@@ -21,6 +21,27 @@ ingestion order: official API > RSS/Atom > structured feed > official HTML > sec
 | CISA advisories | RSS | ❌ HTTP 403 for non-browser UA — shipped **disabled**, no UA spoofing |
 | ISO 42001 page | page_watch | ❌ HTTP 403 for non-browser UA — shipped **disabled** |
 
+## Second verification round (2026-08-11) — incidents, press, events
+
+| Source | Mechanism | Result |
+|---|---|---|
+| **AI Incident Database** | RSS `incidentdatabase.ai/rss.xml` | ✅ verified — 100 entries, current within days. Primary incident stream (CC BY-SA). GraphQL API exists but needs POST; SafeFetcher is GET-only, so RSS is used. |
+| European Commission — Digital Strategy | RSS | ✅ verified — official EU AI policy announcements (Tier 1) |
+| The Register — AI/ML | Atom | ✅ verified — 50 entries, AI-specific section (Tier 3) |
+| MIT Technology Review — AI | RSS | ✅ verified (Tier 3) |
+| TechCrunch — AI | RSS | ✅ verified (Tier 3) |
+| NIST Events | RSS | ✅ feed works, but **0 of 40 entries were AI-related** — NIST's events are mostly metrology/forensics. Kept enabled behind the AI-relevance filter so AI workshops surface when held. |
+| OECD AI Incidents Monitor (AIM) | — | ❌ no feed/API found; JS application only |
+| CSET Georgetown, Lawfare | RSS | ❌ HTTP 403 for non-browser UA |
+| VentureBeat AI | RSS | ⚠️ parses, but newest entry was ~3 months stale — not adopted |
+| Tortoise Global AI Index | — | ❌ not a live source: annual publication (5th edition, Sept 2024), no API. Useful as a curation reference, not for ingestion. |
+
+### Still needed
+**Events & professional development has no credible open aggregator.** Options are
+(a) curate events as records like regulations, or (b) add individual organizer feeds
+(professional bodies, standards organizations, universities). Until then the Events
+page states its coverage limits plainly rather than implying completeness.
+
 Tiers (§31): 1 = primary authoritative · 2 = high-quality secondary · 3 = professional
 reporting · 4 = community/discovery (never establishes regulatory facts alone).
 

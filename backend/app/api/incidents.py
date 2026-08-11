@@ -1,6 +1,6 @@
-"""Incidents API (T-016)."""
+"""Incidents API (T-016). Default ordering is recency — severity is a sort option."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -17,6 +17,7 @@ _SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 def list_incidents(
     severity: str | None = None,
     category: str | None = None,
+    sort: str = Query(default="newest", pattern="^(newest|severity)$"),
     db: Session = Depends(get_db),
 ) -> list[IncidentOut]:
     q = select(Incident)
@@ -24,12 +25,15 @@ def list_incidents(
         q = q.where(Incident.severity == severity)
     if category:
         q = q.where(Incident.category == category)
-    rows = db.execute(q).scalars().all()
-    rows = sorted(
-        rows,
-        key=lambda i: (_SEVERITY_ORDER.get(i.severity, 9),
-                       -(i.reported_at.timestamp() if i.reported_at else 0)),
-    )
+    rows = list(db.execute(q).scalars().all())
+
+    def reported(i: Incident) -> float:
+        return i.reported_at.timestamp() if i.reported_at else 0.0
+
+    if sort == "severity":
+        rows.sort(key=lambda i: (_SEVERITY_ORDER.get(i.severity, 9), -reported(i)))
+    else:
+        rows.sort(key=lambda i: -reported(i))
     return [IncidentOut.model_validate(i) for i in rows]
 
 

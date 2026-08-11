@@ -209,9 +209,13 @@ export interface MapRow {
   code: string;
   name: string;
   iso_numeric: string | null;
-  regulations: number;
+  /** Tracked governance instruments (regulations, frameworks, national standards). */
+  instruments: number;
   recent_items: number;
-  members: string[];
+  /** Where clicking should navigate (EU member states point at "EU"). */
+  link_code: string;
+  /** Higher-level jurisdictions contributing to this count, e.g. ["EU"]. */
+  via: string[];
 }
 
 export interface SearchOut {

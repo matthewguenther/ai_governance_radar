@@ -71,9 +71,11 @@ def dashboard_summary(db: Session, window_days: int | None = None) -> dict:
     total = db.execute(
         select(func.count(Item.id)).where(Item.first_seen_at > since)
     ).scalar_one()
+    # Incident signal = newly reported incident records + freshly collected
+    # incident reports from monitored sources (e.g. the AI Incident Database).
     incidents = db.execute(
         select(func.count(Incident.id)).where(Incident.reported_at > since)
-    ).scalar_one()
+    ).scalar_one() + _cat_count(db, since, "incident")
     opportunities = _cat_count(db, since, "training") + _cat_count(db, since, "event")
     statuses = all_watch_statuses(db)
     return {

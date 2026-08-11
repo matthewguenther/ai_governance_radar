@@ -53,6 +53,64 @@
   polling_interval_minutes: 720
   enabled: true
   attribution: "Contains public sector information licensed under the Open Government Licence v3.0."
+  config:
+    # GOV.UK's site-wide search returns unrelated government news; require
+    # AI-specific subject matter before an item enters the radar.
+    require_ai_relevance: true
+
+# --- Incidents -------------------------------------------------------------
+- name: AI Incident Database
+  url: https://incidentdatabase.ai/
+  feed_url: https://incidentdatabase.ai/rss.xml
+  type: rss
+  tier: 2
+  category: incident
+  polling_interval_minutes: 360
+  enabled: true
+  attribution: "AI Incident Database (Responsible AI Collaborative), CC BY-SA."
+
+# --- AI governance / policy press (Tier 3) ---------------------------------
+- name: The Register — AI/ML
+  url: https://www.theregister.com/software/ai_ml/
+  feed_url: https://www.theregister.com/software/ai_ml/headlines.atom
+  type: atom
+  tier: 3
+  category: news
+  polling_interval_minutes: 360
+  enabled: true
+
+- name: MIT Technology Review — AI
+  url: https://www.technologyreview.com/topic/artificial-intelligence/
+  feed_url: https://www.technologyreview.com/topic/artificial-intelligence/feed/
+  type: rss
+  tier: 3
+  category: news
+  polling_interval_minutes: 720
+  enabled: true
+
+- name: TechCrunch — AI
+  url: https://techcrunch.com/category/artificial-intelligence/
+  feed_url: https://techcrunch.com/category/artificial-intelligence/feed/
+  type: rss
+  tier: 3
+  category: news
+  polling_interval_minutes: 720
+  enabled: true
+  config:
+    require_ai_relevance: true
+
+# --- Events & professional development --------------------------------------
+- name: NIST Events
+  url: https://www.nist.gov/news-events/events
+  feed_url: https://www.nist.gov/news-events/events/rss.xml
+  type: rss
+  tier: 1
+  jurisdiction: US
+  category: event
+  polling_interval_minutes: 1440
+  enabled: true
+  config:
+    require_ai_relevance: true
 
 - name: arXiv — LLM/AI security research
   url: https://arxiv.org/list/cs.CR/recent
@@ -98,6 +156,18 @@
   category: regulation
   polling_interval_minutes: 1440
   enabled: true
+
+- name: European Commission — Digital Strategy
+  url: https://digital-strategy.ec.europa.eu/en/news
+  feed_url: https://digital-strategy.ec.europa.eu/en/rss.xml
+  type: rss
+  tier: 1
+  jurisdiction: EU
+  category: regulation
+  polling_interval_minutes: 720
+  enabled: true
+  config:
+    require_ai_relevance: true
 
 - name: NIST AI RMF page
   url: https://www.nist.gov/itl/ai-risk-management-framework

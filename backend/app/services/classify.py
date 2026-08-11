@@ -12,12 +12,23 @@ CATEGORY_RULES: list[tuple[str, str]] = [
      r"rulemaking|compliance deadline)\b", "regulation"),
     (r"\b(standard|framework|iso/iec|iso \d+|nist (ai|sp|rmf)|rmf|atlas|top 10|guideline)\b",
      "standard"),
-    (r"\b(incident|breach|leak(ed|age)?|failure|harm|outage|compromise[d]?)\b", "incident"),
+    # Actual events, not research *about* failures — defensive-research titles
+    # ("Breach-Aware …", "Defending Against …") must not read as incidents.
+    (r"\b(incident|data breach|was breached|breached \w+ (org|compan|system)|hacked|"
+     r"leaked|outage|lawsuit|sued|settlement|fined|penalt(y|ies) against|recall(ed)?|"
+     r"apologi[sz]ed|investigation into)\b", "incident"),
     (r"\b(security|vulnerab|exploit|attack|injection|jailbreak|malware|threat|cve|"
      r"red.team|adversarial)\b", "security"),
     (r"\b(research|study|paper|preprint|arxiv|benchmark|evaluation)\b", "research"),
-    (r"\b(webinar|conference|summit|workshop|symposium|register|event)\b", "event"),
-    (r"\b(training|certification|certificate|course|curriculum|exam)\b", "training"),
+    # Events must be *announcements of a gathering*, not articles that merely
+    # mention one ("…said at a conference"). Anything looser mislabels news.
+    (r"\b(webinar|call for papers|registration (is )?(now )?open|save the date|"
+     r"will host (a |an )?(workshop|summit|conference|symposium)|"
+     r"(workshop|symposium|summit) on \w+)\b", "event"),
+    # No keyword rule for `training`: "AI training" means model training, and
+    # "credential" appears in credential-theft security stories. Professional
+    # development is recognised only from a source declared to publish it
+    # (Source.category_default), never inferred from prose.
     (r"\b(index|ranking|readiness)\b", "ranking"),
 ]
 
@@ -49,6 +60,26 @@ JURISDICTION_RULES: list[tuple[str, str]] = [
 
 _compiled_cat = [(re.compile(p, re.I), c) for p, c in CATEGORY_RULES]
 _compiled_jur = [(re.compile(p, re.I), j) for p, j in JURISDICTION_RULES]
+
+# An item must show AI-specific relevance to earn a high impact score. Broad
+# government/news feeds otherwise surface unrelated material (housing policy,
+# scholarships) that has no place on an AI governance radar.
+AI_RELEVANCE = re.compile(
+    r"\b("
+    r"a\.i\.|\bai\b|artificial intelligence|machine learning|\bml\b|"
+    r"llm|large language model|foundation model|frontier model|"
+    r"generative ai|genai|chatbot|deepfake|neural network|deep learning|"
+    r"algorithmic|automated decision|facial recognition|biometric|"
+    r"agentic|autonomous (system|agent|vehicle)|"
+    r"chatgpt|openai|anthropic|claude|gemini|copilot|llama|mistral"
+    r")\b",
+    re.I,
+)
+
+
+def is_ai_relevant(title: str, excerpt: str | None) -> bool:
+    """True when the text shows AI-specific subject matter."""
+    return bool(AI_RELEVANCE.search(f"{title} {excerpt or ''}"))
 
 
 def classify(title: str, excerpt: str | None, category_default: str | None,

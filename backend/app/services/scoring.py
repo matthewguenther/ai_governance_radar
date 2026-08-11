@@ -30,6 +30,10 @@ CHANGE_TYPE_POINTS = {
 
 HIGH_IMPACT_THRESHOLD = 70
 
+# Items with no AI-specific relevance can never present as significant governance
+# signal, regardless of source authority or recency.
+NO_AI_RELEVANCE_CAP = 25
+
 
 @dataclass
 class ScoreResult:
@@ -44,6 +48,7 @@ def score_item(
     published_at: datetime | None,
     watched_match: bool = False,
     now: datetime | None = None,
+    ai_relevant: bool = True,
 ) -> ScoreResult:
     now = now or datetime.now(UTC)
     factors: list[dict] = []
@@ -77,6 +82,16 @@ def score_item(
         factors.append({"factor": "Matches your watchlist", "points": 15})
 
     score = min(sum(f["points"] for f in factors), 100)
+
+    if not ai_relevant and score > NO_AI_RELEVANCE_CAP:
+        # Recorded as a negative factor so the displayed breakdown still sums to
+        # the final score (the UI explains every point).
+        factors.append({
+            "factor": "No AI-specific relevance detected — impact capped",
+            "points": NO_AI_RELEVANCE_CAP - score,
+        })
+        score = NO_AI_RELEVANCE_CAP
+
     return ScoreResult(score=score, factors=factors)
 
 

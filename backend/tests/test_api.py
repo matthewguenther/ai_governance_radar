@@ -137,11 +137,39 @@ def test_dashboard_summary_and_brief(client):
 
 def test_map_data(client):
     rows = client.get("/api/dashboard/map").json()
-    us = next((r for r in rows if r["code"] == "US"), None)
-    assert us is not None and us["regulations"] >= 1 and us["iso_numeric"] == "840"
-    # EU regulations propagate to member states
-    fr = next((r for r in rows if r["code"] == "FR"), None)
-    assert fr is not None and fr["regulations"] >= 1
+    by_code = {r["code"]: r for r in rows}
+
+    us = by_code.get("US")
+    assert us is not None and us["instruments"] >= 1 and us["iso_numeric"] == "840"
+    assert us["link_code"] == "US" and us["via"] == []
+
+    # Non-regulation instruments count too, so jurisdictions tracked only via a
+    # framework (Singapore's Model AI Governance Framework) still appear.
+    sg = by_code.get("SG")
+    assert sg is not None and sg["instruments"] >= 1
+
+    # EU-level instruments show over member states, but the click-through must
+    # point at the EU record rather than a jurisdiction with no records.
+    fr = by_code.get("FR")
+    assert fr is not None and fr["instruments"] >= 1
+    assert fr["via"] == ["EU"] and fr["link_code"] == "EU"
+
+
+def test_items_default_sort_is_newest(client):
+    items = client.get("/api/items", params={"limit": 10}).json()["items"]
+    stamps = [i["published_at"] or i["first_seen_at"] for i in items]
+    assert stamps == sorted(stamps, reverse=True)
+
+
+def test_incidents_sort_options(client):
+    newest = client.get("/api/incidents").json()
+    assert [i["reported_at"] for i in newest] == sorted(
+        [i["reported_at"] for i in newest], reverse=True
+    )
+    by_sev = client.get("/api/incidents", params={"sort": "severity"}).json()
+    order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+    ranks = [order[i["severity"]] for i in by_sev]
+    assert ranks == sorted(ranks)
 
 
 def test_sources_api_and_ssrf_rejection(client, monkeypatch):

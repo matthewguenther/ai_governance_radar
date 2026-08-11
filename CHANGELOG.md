@@ -41,6 +41,41 @@ All notable changes to this project. Dates are UTC.
 
 ## [Unreleased]
 
+### 2026-08-11 — Data quality, recency, and classifier honesty
+**Sources (6 added, all live-verified).** AI Incident Database RSS (real, current
+incident reports — the primary fix for years-old incident data), European Commission
+Digital Strategy (Tier 1 EU), The Register AI/ML, MIT Technology Review AI,
+TechCrunch AI, NIST Events. See SOURCE_CATALOG.md for what was rejected and why.
+
+**Classifier precision.** Added an AI-relevance gate: items with no AI-specific
+subject matter are capped at impact 25 (recorded as a visible negative factor), and
+broad feeds (GOV.UK, TechCrunch, EU, NIST Events) drop them at ingestion. Fixed three
+mislabelling bugs: "Federal **Register**" read as an event, "AI **training**" (model
+training) read as professional development, and defensive research ("**Breach**-Aware
+…") read as an incident. `training` is no longer inferred from prose at all — only
+from a source declared to publish it. New `radar rescore [--prune-irrelevant]`
+command re-applies rules to stored items; 18 off-topic items pruned.
+
+**Recency over criticality.** Items API now defaults to newest-first; incidents API
+gained `sort=newest|severity` (newest default). Intelligence Feed and Incidents pages
+have sort controls. Dashboard now shows *recent incident reports* rather than curated
+records from years ago; the KPI counts reported incidents too.
+
+**Map semantics.** It was counting only `regulations`, so jurisdictions tracked via a
+framework (Singapore) were invisible; and EU activity was copied onto member states
+whose click-through landed empty. Now counts all governance instruments, labels
+itself a **coverage map** (not a ranking of national regulation), and EU-covered
+states link to the EU record. Also capped in width so it no longer dominates
+large displays.
+
+**Classifier definitions.** Every impact band, confidence level, severity, fact
+status, and source tier now states its meaning on hover (`lib/definitions.ts`), with
+a "What do these ratings mean?" explainer on Incidents.
+
+**Other.** LIVE indicators use a pulsing red dot with neutral text (broadcast
+convention). New Events & Training page — the Opportunities KPI no longer dumps users
+into a filtered feed — with an explicit note about its coverage limits.
+
 ### 2026-08-11 — V2 design shipped: "Refined Intelligence Dashboard" (DEC-025)
 - Production UI migrated to the owner-approved Direction A rev 2 after a three-way
   prototype comparison: refreshed tokens (navy surfaces, gradient cards, accent

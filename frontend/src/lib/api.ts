@@ -107,7 +107,9 @@ export const useEntity = (slug: string | undefined) =>
     enabled: !!slug,
   });
 
-export const useIncidents = (filters: { severity?: string; category?: string } = {}) =>
+export const useIncidents = (
+  filters: { severity?: string; category?: string; sort?: "newest" | "severity" } = {},
+) =>
   useQuery({
     queryKey: ["incidents", filters],
     queryFn: () => request<IncidentOut[]>(`/incidents${qs(filters)}`),

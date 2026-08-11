@@ -1,8 +1,14 @@
-/** SVG choropleth via d3-geo + vendored world-atlas data (DEC-022), approved
- * Direction A treatment: dark land, glowing activity markers sized by value,
- * High/Medium/Emerging legend. Metric explicitly labeled (§21); color encodes
- * activity volume, never "good/bad" regulation. Fully keyboard accessible with
- * a text alternative below the map. */
+/** Jurisdiction coverage map (§21).
+ *
+ * What it conveys — stated plainly in the UI, because an unexplained world map
+ * invites the reader to assume it ranks countries: this shows **what this
+ * instance tracks**, i.e. governance instruments in the curated registry plus
+ * recent intelligence volume per jurisdiction. It is a coverage map, not a
+ * global AI-regulation ranking, and every marker leads somewhere real.
+ *
+ * Size is capped so the map supports the dashboard rather than dominating it on
+ * large displays.
+ */
 
 import { useMemo, useState } from "react";
 import { geoNaturalEarth1, geoPath } from "d3-geo";
@@ -11,31 +17,30 @@ import type { FeatureCollection, Geometry } from "geojson";
 import world from "world-atlas/countries-110m.json";
 import { useNavigate } from "react-router-dom";
 
+import { InfoTip } from "../ui/InfoTip";
 import { T } from "../../lib/tokens";
 import type { MapRow } from "../../lib/types";
 
-type Metric = "regulations" | "recent_items";
+type Metric = "instruments" | "recent_items";
 
 const METRIC_LABELS: Record<Metric, string> = {
-  regulations: "Tracked AI regulations (count)",
-  recent_items: "Intelligence activity, last 30 days (items)",
+  instruments: "Tracked governance instruments",
+  recent_items: "Intelligence volume, last 30 days",
+};
+
+const METRIC_HELP: Record<Metric, string> = {
+  instruments:
+    "How many laws, frameworks, and national standards this instance tracks for each " +
+    "jurisdiction — a measure of your coverage, not of how regulated a country is. " +
+    "Thin coverage means we should add records, not that the country is inactive.",
+  recent_items:
+    "How many items were collected for each jurisdiction in the last 30 days. This " +
+    "reflects both real-world activity and which sources you have enabled.",
 };
 
 const LAND = "#161D2A";
-const LAND_ACTIVE = ["#20304A", "#28405F", "#31517A"]; // subtle fill under the markers
+const LAND_ACTIVE = ["#20304A", "#28405F", "#31517A"];
 const BORDER = "#0B0F16";
-
-function fillColor(value: number, max: number): string {
-  if (value <= 0 || max <= 0) return LAND;
-  const idx = Math.min(LAND_ACTIVE.length - 1, Math.floor((value / max) * LAND_ACTIVE.length));
-  return LAND_ACTIVE[Math.max(0, idx)];
-}
-
-function dotColor(value: number, max: number): string {
-  if (value >= max * 0.66) return T.critical;
-  if (value >= max * 0.33) return T.high;
-  return T.emerging;
-}
 
 const LEGEND: [string, string][] = [
   ["High", T.critical],
@@ -45,7 +50,7 @@ const LEGEND: [string, string][] = [
 
 export function WorldMap({ rows }: { rows: MapRow[] }) {
   const navigate = useNavigate();
-  const [metric, setMetric] = useState<Metric>("regulations");
+  const [metric, setMetric] = useState<Metric>("instruments");
   const [hover, setHover] = useState<{ name: string; row?: MapRow; x: number; y: number } | null>(null);
 
   const { features, path, centroids } = useMemo(() => {
@@ -72,8 +77,23 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
   const max = Math.max(1, ...rows.map((r) => r[metric]));
   const active = rows.filter((r) => r[metric] > 0).sort((a, b) => b[metric] - a[metric]);
 
+  const fillColor = (value: number) => {
+    if (value <= 0) return LAND;
+    const idx = Math.min(LAND_ACTIVE.length - 1, Math.floor((value / max) * LAND_ACTIVE.length));
+    return LAND_ACTIVE[Math.max(0, idx)];
+  };
+  const dotColor = (value: number) =>
+    value >= max * 0.66 ? T.critical : value >= max * 0.33 ? T.high : T.emerging;
+
+  const open = (row: MapRow) =>
+    navigate(
+      metric === "instruments"
+        ? `/regulatory?country=${row.link_code}`
+        : `/items?jurisdiction=${row.link_code}`,
+    );
+
   return (
-    <div className="relative">
+    <div className="relative mx-auto w-full max-w-[620px]">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <label className="flex items-center gap-2 text-xs text-tx-secondary">
           <span className="meta-label">Metric</span>
@@ -86,6 +106,7 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
               <option key={k} value={k}>{v}</option>
             ))}
           </select>
+          <InfoTip content={METRIC_HELP[metric]} />
         </label>
         <div className="flex items-center gap-3" aria-hidden>
           {LEGEND.map(([label, col]) => (
@@ -103,7 +124,7 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
       <svg
         viewBox="40 10 690 350"
         role="img"
-        aria-label={`World map of ${METRIC_LABELS[metric]}`}
+        aria-label={`World map of ${METRIC_LABELS[metric]} by jurisdiction`}
         className="w-full"
         onMouseLeave={() => setHover(null)}
       >
@@ -115,15 +136,15 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
             <path
               key={iso + (f.properties?.name ?? "")}
               d={path(f) ?? undefined}
-              fill={fillColor(value, max)}
+              fill={fillColor(value)}
               stroke={BORDER}
               strokeWidth={0.5}
-              tabIndex={row ? 0 : -1}
-              role={row ? "button" : undefined}
-              aria-label={row ? `${row.name}: ${value} — open regulations` : undefined}
-              className={row ? "cursor-pointer transition-opacity hover:opacity-80 focus:opacity-80" : ""}
-              onClick={() => row && navigate(`/regulatory?country=${row.code.split("-")[0]}`)}
-              onKeyDown={(e) => e.key === "Enter" && row && navigate(`/regulatory?country=${row.code.split("-")[0]}`)}
+              tabIndex={row && value > 0 ? 0 : -1}
+              role={row && value > 0 ? "button" : undefined}
+              aria-label={row && value > 0 ? `${row.name}: ${value} — open details` : undefined}
+              className={row && value > 0 ? "cursor-pointer transition-opacity hover:opacity-80 focus:opacity-80" : ""}
+              onClick={() => row && value > 0 && open(row)}
+              onKeyDown={(e) => e.key === "Enter" && row && value > 0 && open(row)}
               onMouseMove={(e) => {
                 const rect = (e.target as SVGPathElement).ownerSVGElement!.getBoundingClientRect();
                 setHover({
@@ -136,11 +157,10 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
             />
           );
         })}
-        {/* glowing activity markers, sized by value */}
         {rows.filter((r) => r[metric] > 0 && r.iso_numeric).map((r) => {
           const c = centroids.get(r.iso_numeric!.padStart(3, "0"));
           if (!c) return null;
-          const col = dotColor(r[metric], max);
+          const col = dotColor(r[metric]);
           const radius = 2.5 + 2.5 * Math.sqrt(r[metric] / max);
           return (
             <g key={`dot-${r.code}`} pointerEvents="none">
@@ -155,26 +175,30 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
       {hover && (
         <div
           className="pointer-events-none absolute z-10 rounded-ctl border border-bd-strong bg-bg-raised px-2.5 py-1.5 text-xs shadow-card"
-          style={{ left: Math.min(hover.x + 10, 560), top: hover.y + 10 }}
+          style={{ left: Math.min(hover.x + 10, 380), top: hover.y + 10 }}
         >
           <p className="font-medium text-tx-primary">{hover.row?.name ?? hover.name}</p>
           {hover.row ? (
             <>
-              <p className="text-tx-secondary">{hover.row.regulations} tracked regulations</p>
-              <p className="text-tx-secondary">{hover.row.recent_items} items, 30 days</p>
-              {hover.row.members.includes("EU") && (
-                <p className="text-meta text-tx-muted">includes EU-level activity</p>
+              <p className="text-tx-secondary">
+                {hover.row.instruments} tracked instrument{hover.row.instruments === 1 ? "" : "s"}
+              </p>
+              <p className="text-tx-secondary">{hover.row.recent_items} items, last 30 days</p>
+              {hover.row.via.includes("EU") && (
+                <p className="text-meta text-tx-muted">
+                  Covered by EU-level instruments — opens the EU record
+                </p>
               )}
             </>
           ) : (
-            <p className="text-tx-muted">No tracked activity</p>
+            <p className="text-tx-muted">Not tracked yet</p>
           )}
         </div>
       )}
 
-      {/* Accessible text alternative */}
-      <p className="mt-2 text-meta text-tx-muted">
-        {METRIC_LABELS[metric]}:{" "}
+      <p className="mt-2 text-meta leading-relaxed text-tx-muted">
+        <span className="text-tx-secondary">Coverage map</span> — {METRIC_LABELS[metric]} in this
+        instance, not a ranking of national AI regulation.{" "}
         {active.length
           ? active.map((r) => `${r.name} ${r[metric]}`).join(" · ")
           : "no tracked activity yet"}

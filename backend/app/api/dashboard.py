@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.api.helpers import item_to_out
 from app.core.db import get_db
 from app.core.jurisdictions import JURISDICTIONS, country_of
-from app.models import Entity, Item, Regulation
+from app.models import Entity, Item
 from app.schemas.models import WatchStatusOut
 from app.services import brief as brief_service
 
@@ -67,13 +67,25 @@ def morning_brief(
 
 @router.get("/dashboard/map")
 def map_data(db: Session = Depends(get_db)) -> list[dict]:
-    """Country-level regulatory activity for the choropleth (§21). Metric is labeled
-    by the frontend; color never implies good/bad regulation."""
+    """Jurisdiction coverage for the choropleth (§21).
+
+    The metric is **what this instance tracks**, not a global ranking: counts of
+    tracked governance instruments (regulations, frameworks, and national
+    standards) plus recent intelligence volume. Every count therefore has a
+    reachable destination in the UI. Color encodes activity volume and never
+    implies that regulation is good or bad.
+
+    EU-level instruments are shown over member states because they genuinely
+    apply there, but such states carry `via: ["EU"]` and a `link_code` of "EU"
+    so clicking lands on the instrument that actually exists.
+    """
     recent_cutoff = datetime.now(UTC) - timedelta(days=30)
 
-    reg_rows = db.execute(
+    # All tracked governance instruments with a jurisdiction (not just regulations —
+    # e.g. Singapore's Model AI Governance Framework is a framework record).
+    instrument_rows = db.execute(
         select(Entity.jurisdiction_code, func.count(Entity.id))
-        .join(Regulation, Regulation.entity_id == Entity.id)
+        .where(Entity.entity_type.in_(("regulation", "standard", "framework")))
         .group_by(Entity.jurisdiction_code)
     ).all()
     item_rows = db.execute(
@@ -84,40 +96,57 @@ def map_data(db: Session = Depends(get_db)) -> list[dict]:
 
     by_country: dict[str, dict] = {}
 
-    def bucket(code: str | None):
+    def entry_for(code: str | None) -> dict | None:
         if not code:
             return None
         country = country_of(code)
         if country is None:
             return None
-        entry = by_country.setdefault(
+        return by_country.setdefault(
             country.code,
-            {"code": country.code, "name": country.name,
-             "iso_numeric": country.iso_numeric, "regulations": 0, "recent_items": 0,
-             "members": []},
+            {
+                "code": country.code,
+                "name": country.name,
+                "iso_numeric": country.iso_numeric,
+                "instruments": 0,
+                "recent_items": 0,
+                "link_code": country.code,
+                "via": [],
+            },
         )
-        return entry
 
-    for code, count in reg_rows:
-        entry = bucket(code)
+    for code, count in instrument_rows:
+        entry = entry_for(code)
         if entry:
-            entry["regulations"] += count
+            entry["instruments"] += count
     for code, count in item_rows:
-        entry = bucket(code)
+        entry = entry_for(code)
         if entry:
             entry["recent_items"] += count
 
-    # EU activity should light up member states on the map
+    # EU-level instruments apply in member states; surface them there but point
+    # the click at the EU jurisdiction where the records actually live.
     eu = by_country.get("EU")
-    if eu:
+    if eu and (eu["instruments"] or eu["recent_items"]):
         for j in JURISDICTIONS:
             if j.parent_code == "EU" and j.iso_numeric:
                 member = by_country.setdefault(
                     j.code,
-                    {"code": j.code, "name": j.name, "iso_numeric": j.iso_numeric,
-                     "regulations": 0, "recent_items": 0, "members": []},
+                    {
+                        "code": j.code, "name": j.name, "iso_numeric": j.iso_numeric,
+                        "instruments": 0, "recent_items": 0,
+                        "link_code": j.code, "via": [],
+                    },
                 )
-                member["regulations"] += eu["regulations"]
+                member["instruments"] += eu["instruments"]
                 member["recent_items"] += eu["recent_items"]
-                member["members"].append("EU")
+                member["via"].append("EU")
+                if member["link_code"] == j.code and not _has_own_records(db, j.code):
+                    member["link_code"] = "EU"
     return list(by_country.values())
+
+
+def _has_own_records(db: Session, jurisdiction_code: str) -> bool:
+    return db.execute(
+        select(Entity.id).where(Entity.jurisdiction_code == jurisdiction_code).limit(1)
+    ).scalar_one_or_none() is not None

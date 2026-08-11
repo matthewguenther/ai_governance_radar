@@ -3,6 +3,15 @@
 
 import clsx from "clsx";
 
+import {
+  CONFIDENCE_DEFS,
+  FACT_STATUS_DEFS,
+  IMPACT_EXPLAINER,
+  SEVERITY_DEFS,
+  TIER_DEFS,
+  impactBand,
+} from "../../lib/definitions";
+
 type Severity = "critical" | "high" | "watch" | "positive" | "info" | "emerging";
 
 const FILL_STYLES: Record<Severity, string> = {
@@ -66,10 +75,13 @@ export function impactTone(score: number): Severity {
 }
 
 export function ImpactBadge({ score }: { score: number }) {
-  const label = score >= 70 ? "High impact" : score >= 50 ? "Elevated" : score >= 30 ? "Watch" : "Info";
+  const band = impactBand(score);
   return (
-    <Pill tone={impactTone(score)} title={`Impact score ${score}/100`}>
-      {label} {score}
+    <Pill
+      tone={impactTone(score)}
+      title={`${band.label} — ${score}/100. ${band.meaning}\n\n${IMPACT_EXPLAINER}`}
+    >
+      {band.label} {score}
     </Pill>
   );
 }
@@ -77,26 +89,20 @@ export function ImpactBadge({ score }: { score: number }) {
 export function SeverityBadge({ severity }: { severity: string }) {
   const tone: Severity =
     severity === "critical" ? "critical" : severity === "high" ? "high" : severity === "medium" ? "watch" : "info";
-  return <Pill tone={tone}>{severity}</Pill>;
+  return <Pill tone={tone} title={SEVERITY_DEFS[severity] ?? `Severity: ${severity}`}>{severity}</Pill>;
 }
 
 export function ConfidenceBadge({ confidence }: { confidence: string }) {
   const tone: Severity = confidence === "high" ? "positive" : confidence === "medium" ? "watch" : "critical";
   return (
-    <Pill tone={tone} title={`Confidence: ${confidence} — independent of impact`}>
+    <Pill tone={tone} title={CONFIDENCE_DEFS[confidence] ?? `Confidence: ${confidence}`}>
       Conf {confidence === "medium" ? "med" : confidence}
     </Pill>
   );
 }
 
 export function TierBadge({ tier }: { tier: number }) {
-  const titles: Record<number, string> = {
-    1: "Tier 1 — primary authoritative source",
-    2: "Tier 2 — high-quality secondary source",
-    3: "Tier 3 — professional reporting",
-    4: "Tier 4 — community / discovery",
-  };
-  return <MicroPill title={titles[tier] ?? `Tier ${tier}`}>T{tier}</MicroPill>;
+  return <MicroPill title={TIER_DEFS[tier] ?? `Tier ${tier}`}>T{tier}</MicroPill>;
 }
 
 const REG_STATUS_TONE: Record<string, Severity> = {
@@ -138,5 +144,9 @@ export function FactStatusBadge({ status }: { status: string | null }) {
   if (!status) return null;
   const tone: Severity =
     status === "confirmed" ? "positive" : status === "disputed" || status === "alleged" ? "critical" : "watch";
-  return <Pill tone={tone}>{status.replace(/_/g, " ")}</Pill>;
+  return (
+    <Pill tone={tone} title={FACT_STATUS_DEFS[status] ?? `Fact status: ${status}`}>
+      {status.replace(/_/g, " ")}
+    </Pill>
+  );
 }

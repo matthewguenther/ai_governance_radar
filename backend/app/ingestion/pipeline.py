@@ -133,6 +133,12 @@ class NormalizedToItem:
                 return existing
             return None
 
+        ai_relevant = classify.is_ai_relevant(n.title, n.excerpt)
+        if not ai_relevant and (self.source.config or {}).get("require_ai_relevance"):
+            # Broad feeds (e.g. government-wide search) carry unrelated material;
+            # keep it out of the radar entirely rather than scoring it low.
+            return None
+
         categories, jurisdiction = classify.classify(
             n.title, n.excerpt, self.source.category_default, self.source.jurisdiction_code
         )
@@ -141,6 +147,7 @@ class NormalizedToItem:
             reliability_tier=self.source.reliability_tier,
             change_type=change_type,
             published_at=n.published_at,
+            ai_relevant=ai_relevant,
         )
         item = Item(
             source_id=self.source.id,

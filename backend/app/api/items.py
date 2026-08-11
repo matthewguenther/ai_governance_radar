@@ -14,8 +14,9 @@ from app.schemas.models import ItemOut, PageOut
 router = APIRouter(prefix="/items", tags=["items"])
 
 SORTS = {
+    # Timeliness first: fall back to collection time when a feed omits a date.
+    "newest": func.coalesce(Item.published_at, Item.first_seen_at).desc(),
     "impact": Item.impact_score.desc(),
-    "newest": Item.published_at.desc(),
     "first_seen": Item.first_seen_at.desc(),
 }
 
@@ -67,7 +68,7 @@ def list_items(
     until: datetime | None = None,
     include_demo: bool = True,
     collapse_clusters: bool = False,
-    sort: str = Query(default="first_seen", pattern="^(impact|newest|first_seen)$"),
+    sort: str = Query(default="newest", pattern="^(impact|newest|first_seen)$"),
     offset: int = Query(default=0, ge=0),
     limit: int = Query(default=25, ge=1, le=100),
     db: Session = Depends(get_db),

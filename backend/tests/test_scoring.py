@@ -45,3 +45,43 @@ def test_tier4_never_high_confidence():
 
 def test_disputed_always_low():
     assert confidence_for(1, fact_status="disputed") == "low"
+
+
+def test_non_ai_items_cannot_be_high_impact():
+    """A tier-1 government feed can carry unrelated news; it must not present as
+    a high-impact AI governance signal."""
+    r = score_item(["regulation"], 1, "status_change", NOW, now=NOW, ai_relevant=False)
+    assert r.score <= 25
+    assert any("No AI-specific relevance" in f["factor"] for f in r.factors)
+    # The displayed breakdown must still sum to the score shown to the user.
+    assert sum(f["points"] for f in r.factors) == r.score
+
+
+def test_ai_relevance_detection():
+    from app.services.classify import is_ai_relevant
+
+    assert is_ai_relevant("Colorado AI Act guidance released", None)
+    assert is_ai_relevant("New rules for machine learning systems", None)
+    assert is_ai_relevant("Anthropic model behaviour study", None)
+    assert not is_ai_relevant("PM starts roll out of everyday fixes on cost of living", None)
+    assert not is_ai_relevant("Applications open for Chevening Scholarships", None)
+
+
+def test_classifier_precision_on_common_false_positives():
+    """Terms that previously mis-classified items must no longer do so."""
+    from app.services.classify import classify
+
+    # "Federal Register" must not read as an event; "AI training" is model
+    # training, not professional development.
+    cats, _ = classify("Notice published in the Federal Register on AI systems", None, None, None)
+    assert "event" not in cats
+    cats, _ = classify("Meta halts AI training after investigation", None, None, None)
+    assert "training" not in cats
+    # Defensive research must not read as an incident.
+    cats, _ = classify("Breach-Aware Prompt Injection Shielding for LLMs", None, None, None)
+    assert "incident" not in cats
+    # Genuine events and incidents still classify.
+    cats, _ = classify("IAPP webinar: operationalizing AI governance", None, None, None)
+    assert "event" in cats
+    cats, _ = classify("Court revives lawsuit claiming AI software fueled harm", None, None, None)
+    assert "incident" in cats

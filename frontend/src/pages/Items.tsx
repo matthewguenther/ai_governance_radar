@@ -22,6 +22,8 @@ export default function Items() {
   const minImpact = params.get("min_impact") ?? "";
   const confidence = params.get("confidence") ?? "";
   const sourceId = params.get("source_id") ?? "";
+  const jurisdiction = params.get("jurisdiction") ?? "";
+  const sort = (params.get("sort") ?? "newest") as "newest" | "impact" | "first_seen";
   const includeDemo = params.get("include_demo") !== "false";
   const offset = Number(params.get("offset") ?? 0);
 
@@ -31,9 +33,10 @@ export default function Items() {
     min_impact: minImpact ? Number(minImpact) : undefined,
     confidence: confidence || undefined,
     source_id: sourceId ? Number(sourceId) : undefined,
+    jurisdiction: jurisdiction || undefined,
     include_demo: includeDemo,
     collapse_clusters: true,
-    sort: "first_seen",
+    sort,
     offset,
     limit: PAGE,
   });
@@ -60,10 +63,18 @@ export default function Items() {
     <>
       <PageHeader
         title="Intelligence Feed"
-        detail="All collected items — duplicates collapsed to their primary source."
+        detail="All collected items, newest first — duplicates collapsed to their primary source."
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
+        <label className="flex items-center gap-1.5 text-xs">
+          <span className="meta-label">Sort</span>
+          <select value={sort} onChange={(e) => setFilter("sort", e.target.value)} className={select}>
+            <option value="newest">Newest first</option>
+            <option value="impact">Highest impact</option>
+            <option value="first_seen">Recently collected</option>
+          </select>
+        </label>
         <label className="flex items-center gap-1.5 text-xs">
           <span className="meta-label">Category</span>
           <select value={category} onChange={(e) => setFilter("category", e.target.value)} className={select}>

@@ -5,6 +5,7 @@ import { Shell } from "./components/layout/Shell";
 import Brief from "./pages/Brief";
 import Dashboard from "./pages/Dashboard";
 import EntityDetail from "./pages/EntityDetail";
+import Events from "./pages/Events";
 import IncidentDetail from "./pages/IncidentDetail";
 import Incidents from "./pages/Incidents";
 import Items from "./pages/Items";
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="incidents" element={<Incidents />} />
           <Route path="incidents/:id" element={<IncidentDetail />} />
           <Route path="items" element={<Items />} />
+          <Route path="events" element={<Events />} />
           <Route path="watchlist" element={<Watchlist />} />
           <Route path="entities/:slug" element={<EntityDetail />} />
           <Route path="search" element={<SearchResults />} />

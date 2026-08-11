@@ -10,23 +10,21 @@ import { ItemDetailDrawer } from "../components/items/ItemDetailDrawer";
 import { ItemRow } from "../components/items/ItemRow";
 import { WorldMap } from "../components/map/WorldMap";
 import { PageHeader } from "../components/layout/PageHeader";
-import { DemoBadge, FactStatusBadge, SeverityBadge, StatusPill } from "../components/ui/Badge";
+import { StatusPill } from "../components/ui/Badge";
 import { Donut } from "../components/ui/charts";
 import { FlagChip } from "../components/ui/FlagChip";
-import { IncidentIcon } from "../components/ui/IncidentIcon";
 import { KpiCard } from "../components/ui/KpiCard";
 import { OrgAvatar } from "../components/ui/OrgAvatar";
 import { CardSkeleton, EmptyState, ErrorState } from "../components/ui/States";
 import {
   useDashboardSummary,
-  useIncidents,
   useItems,
   useMapData,
   useRegulations,
   useStandards,
 } from "../lib/api";
-import { relativeTime, shortDate } from "../lib/format";
-import { T, severityColor } from "../lib/tokens";
+import { shortDate } from "../lib/format";
+import { T } from "../lib/tokens";
 import type { ItemOut } from "../lib/types";
 
 const WINDOW_DAYS = 7;
@@ -80,14 +78,18 @@ function sparkSeries(items: ItemOut[], days = 14): number[] {
 export default function Dashboard() {
   const summary = useDashboardSummary(WINDOW_DAYS);
   const top = useItems({ min_impact: 50, sort: "impact", limit: 5, collapse_clusters: true });
-  const feed = useItems({ sort: "first_seen", limit: 6, collapse_clusters: true });
-  const incidents = useIncidents();
+  const feed = useItems({ sort: "newest", limit: 6, collapse_clusters: true });
+  // Wider sample purely for the KPI sparklines — six rows is not a trend.
+  const activity = useItems({ sort: "newest", limit: 100, collapse_clusters: true });
+  const incidentReports = useItems({
+    category: "incident", sort: "newest", limit: 4, collapse_clusters: true,
+  });
   const standards = useStandards();
   const regulations = useRegulations();
   const map = useMapData();
   const [openItem, setOpenItem] = useState<ItemOut | null>(null);
 
-  const spark = useMemo(() => sparkSeries(feed.data?.items ?? []), [feed.data]);
+  const spark = useMemo(() => sparkSeries(activity.data?.items ?? []), [activity.data]);
 
   const stdSegments = useMemo(() => {
     const rows = standards.data ?? [];
@@ -131,24 +133,24 @@ export default function Dashboard() {
           sub={`last ${WINDOW_DAYS} days`}
         />
         <KpiCard
-          label="New incidents"
+          label="Incident reports"
           value={summary.data?.new_incidents ?? "—"}
           loading={summary.isPending}
-          to="/incidents"
+          to="/items?category=incident"
           tone="high"
           icon={AlertTriangle}
           spark={spark}
-          sub="monitored feeds"
+          sub="reported harms & actions"
         />
         <KpiCard
           label="Opportunities"
           value={summary.data?.new_opportunities ?? "—"}
           loading={summary.isPending}
-          to="/items?category=training"
+          to="/events"
           tone="positive"
           icon={GraduationCap}
           spark={spark}
-          sub="training & events"
+          sub="events & training"
         />
       </div>
 
@@ -188,38 +190,29 @@ export default function Dashboard() {
       </div>
 
       <div className="mt-3.5 grid gap-3.5 lg:grid-cols-3">
-        {/* Incidents card */}
-        <Card title="AI Incidents" tick={T.high} linkTo="/incidents">
-          {incidents.isPending ? (
+        {/* Incident reports — newest first: incident signal is only useful if it's current */}
+        <Card
+          title="AI Incident Reports"
+          tick={T.high}
+          headRight={
+            <Link to="/incidents" className="text-xs text-accent hover:underline">
+              All incidents
+            </Link>
+          }
+        >
+          {incidentReports.isPending ? (
             <CardSkeleton rows={3} />
-          ) : incidents.isError ? (
-            <ErrorState detail={String(incidents.error)} onRetry={() => incidents.refetch()} />
-          ) : incidents.data.length === 0 ? (
-            <EmptyState title="No incident records" />
+          ) : incidentReports.isError ? (
+            <ErrorState detail={String(incidentReports.error)} onRetry={() => incidentReports.refetch()} />
+          ) : incidentReports.data.items.length === 0 ? (
+            <EmptyState
+              title="No incident reports collected"
+              detail="Enable the AI Incident Database source in Settings to monitor reported AI harms."
+            />
           ) : (
-            <ul>
-              {incidents.data.slice(0, 4).map((inc) => (
-                <li key={inc.id} className="border-b border-bd-subtle last:border-b-0">
-                  <Link
-                    to={`/incidents/${inc.id}`}
-                    className="flex gap-3 px-4 py-3 transition-colors hover:bg-accent/5"
-                  >
-                    <IncidentIcon category={inc.category} tone={severityColor(inc.severity)} />
-                    <span className="min-w-0 flex-1">
-                      <span className="line-clamp-2 text-sm font-medium text-tx-primary">{inc.title}</span>
-                      <span className="mt-1 flex flex-wrap items-center gap-1.5">
-                        <SeverityBadge severity={inc.severity} />
-                        <FactStatusBadge status={inc.fact_status} />
-                        <DemoBadge show={inc.is_demo} />
-                        <span className="ml-auto font-mono text-[10px] text-tx-muted">
-                          {relativeTime(inc.reported_at)}
-                        </span>
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            incidentReports.data.items.map((item) => (
+              <ItemRow key={item.id} item={item} onOpen={setOpenItem} />
+            ))
           )}
         </Card>
 
@@ -310,13 +303,9 @@ export default function Dashboard() {
           title="Intelligence Feed"
           tick={T.positive}
           headRight={
-            <span className="inline-flex items-center gap-1.5 font-mono text-[10.5px] text-sev-positive">
-              <span
-                aria-hidden
-                className="inline-block h-1.5 w-1.5 rounded-full"
-                style={{ background: T.positive, boxShadow: `0 0 6px ${T.positive}` }}
-              />
-              LIVE ·{" "}
+            <span className="inline-flex items-center gap-2 font-mono text-[10.5px] text-tx-secondary">
+              <span aria-hidden className="live-dot" />
+              LIVE
               <Link to="/items" className="text-accent hover:underline">
                 Open feed
               </Link>

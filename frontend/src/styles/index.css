@@ -46,6 +46,19 @@
   }
 }
 
+/* Live indicator: red dot with a slow breathing glow (broadcast convention) */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(242, 86, 77, 0.55); }
+  50% { opacity: 0.75; box-shadow: 0 0 7px 2px rgba(242, 86, 77, 0.28); }
+}
+.live-dot {
+  @apply inline-block h-1.5 w-1.5 rounded-full bg-sev-critical;
+  animation: live-pulse 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none !important; }
+}
+
 /* Radar logo animation (structure blue, sweep + blips green) */
 @keyframes radar-spin {
   to { transform: rotate(360deg); }
