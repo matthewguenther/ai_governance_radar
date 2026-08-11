@@ -1,12 +1,12 @@
 """Source registry + health endpoints (T-006, T-028)."""
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
-from app.ingestion.safe_fetch import FetchBlockedError, validate_url
-from app.models import Source, SourceRun
+from app.ingestion.safe_fetch import FetchBlockedError, FetchError, validate_url_deep
+from app.models import Item, Source, SourceRun
 from app.schemas.models import SourceCreate, SourceOut, SourcePatch, SourceRunOut
 
 router = APIRouter(prefix="/sources", tags=["sources"])
@@ -22,8 +22,8 @@ def create_source(payload: SourceCreate, db: Session = Depends(get_db)) -> Sourc
     for url in (payload.url, payload.feed_url):
         if url:
             try:
-                validate_url(url)
-            except FetchBlockedError as e:
+                validate_url_deep(url)
+            except (FetchBlockedError, FetchError) as e:
                 raise HTTPException(status_code=422, detail=f"URL rejected: {e}") from e
     exists = db.execute(select(Source).where(Source.name == payload.name)).scalar_one_or_none()
     if exists:
@@ -45,6 +45,26 @@ def patch_source(source_id: int, payload: SourcePatch, db: Session = Depends(get
     db.commit()
     db.refresh(source)
     return source
+
+
+@router.delete("/{source_id}", status_code=204)
+def delete_source(source_id: int, db: Session = Depends(get_db)) -> None:
+    """QA-5: sources with no collected items can be deleted; others only disabled
+    (their items reference them as evidence provenance)."""
+    source = db.get(Source, source_id)
+    if source is None:
+        raise HTTPException(status_code=404, detail="Source not found")
+    has_items = db.execute(
+        select(Item.id).where(Item.source_id == source_id).limit(1)
+    ).scalar_one_or_none()
+    if has_items is not None:
+        raise HTTPException(
+            status_code=409,
+            detail="Source has collected items (provenance); disable it instead of deleting.",
+        )
+    db.execute(delete(SourceRun).where(SourceRun.source_id == source_id))
+    db.delete(source)
+    db.commit()
 
 
 @router.get("/{source_id}/runs", response_model=list[SourceRunOut])

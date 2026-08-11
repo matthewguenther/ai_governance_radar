@@ -11,7 +11,7 @@ import { useItems, useSources } from "../lib/api";
 import { categoryLabel } from "../lib/format";
 import type { ItemOut } from "../lib/types";
 
-const CATEGORIES = ["regulation", "standard", "incident", "security", "research", "news", "training", "event"];
+const CATEGORIES = ["regulation", "standard", "incident", "security", "research", "news", "training", "event", "ranking"];
 const PAGE = 25;
 
 export default function Items() {

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import { Shell } from "./components/layout/Shell";
 import Brief from "./pages/Brief";
@@ -11,6 +11,7 @@ import Items from "./pages/Items";
 import Regulations from "./pages/Regulations";
 import SearchResults from "./pages/SearchResults";
 import Settings from "./pages/Settings";
+import NotFound from "./pages/NotFound";
 import Standards from "./pages/Standards";
 import Watchlist from "./pages/Watchlist";
 
@@ -36,7 +37,7 @@ export default function App() {
           <Route path="entities/:slug" element={<EntityDetail />} />
           <Route path="search" element={<SearchResults />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </QueryClientProvider>

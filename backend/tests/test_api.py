@@ -144,14 +144,23 @@ def test_map_data(client):
     assert fr is not None and fr["regulations"] >= 1
 
 
-def test_sources_api_and_ssrf_rejection(client):
+def test_sources_api_and_ssrf_rejection(client, monkeypatch):
     sources = client.get("/api/sources").json()
     assert len(sources) >= 8
-    # SSRF: private URL rejected on creation
-    r = client.post("/api/sources", json={
-        "name": "Evil", "url": "http://169.254.169.254/latest", "source_type": "rss"})
-    assert r.status_code == 422
-    # valid create + patch round-trip
+    # SSRF: private/disguised URLs rejected on creation (QA-1).
+    # (localhost + decimal-IP resolve via the OS locally — no network involved.)
+    for bad in ("http://169.254.169.254/latest", "http://localhost:9/x", "http://2130706433/"):
+        r = client.post("/api/sources", json={"name": f"Evil {bad}", "url": bad,
+                                              "source_type": "rss"})
+        assert r.status_code == 422, bad
+    # valid create + patch round-trip — stub DNS for the public host (no network in tests)
+    from app.ingestion import safe_fetch
+
+    real_resolve = safe_fetch._resolve_and_check
+    monkeypatch.setattr(
+        safe_fetch, "_resolve_and_check",
+        lambda host: "93.184.215.14" if host == "example.org" else real_resolve(host),
+    )
     r = client.post("/api/sources", json={
         "name": "Test Source X", "url": "https://example.org/x", "source_type": "rss"})
     assert r.status_code == 201
@@ -159,6 +168,18 @@ def test_sources_api_and_ssrf_rejection(client):
     r = client.patch(f"/api/sources/{sid}", json={"enabled": False})
     assert r.json()["enabled"] is False
     assert client.get(f"/api/sources/{sid}/runs").status_code == 200
+    # QA-5: itemless source can be deleted; deletion is permanent
+    assert client.delete(f"/api/sources/{sid}").status_code == 204
+    assert client.delete(f"/api/sources/{sid}").status_code == 404
+
+
+def test_source_with_items_cannot_be_deleted(client):
+    items = client.get("/api/items", params={"limit": 1}).json()["items"]
+    assert items, "seeded items expected"
+    full = client.get(f"/api/items/{items[0]['id']}").json()
+    source = next(s for s in client.get("/api/sources").json()
+                  if s["name"] == full["source_name"])
+    assert client.delete(f"/api/sources/{source['id']}").status_code == 409
 
 
 def test_export_import_roundtrip(client):

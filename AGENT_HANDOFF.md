@@ -1,46 +1,54 @@
 # Agent Handoff
 
-_Last updated: 2026-08-11 (planning session)_
+_Last updated: 2026-08-11 (V1 implementation session)_
 
 ## Where the project stands
-**Phase: planning complete, awaiting owner approval of the plan. No application code
-exists.** This session read the full original spec, normalized it into PRODUCT_SPEC.md,
-decided the architecture (DECISIONS.md DEC-001…015), and wrote the V1 backlog
-(TASKS.md, all TODO).
+**V1 is implemented, tested, QA-reviewed, and functional.** The app runs locally with
+real ingested data, all automated gates pass, and the independent QA pass
+([docs/reviews/V1-QA.md](docs/reviews/V1-QA.md)) found no P0/P1 issues; 5 of 6 P2/P3
+findings were fixed same-day, one accepted with rationale.
 
-## What exists
-- Project artifacts: CLAUDE.md, PRODUCT_SPEC.md, ARCHITECTURE.md, DATA_MODEL.md,
-  DESIGN_SYSTEM.md, TASKS.md, DECISIONS.md, TEST_PLAN.md, SOURCE_CATALOG.md,
-  CHANGELOG.md, this file, .gitignore, .env.example, README.md stub.
-- Original spec `AI_Governance_Radar_Product_Design_Development_Spec.md` (gitignored —
-  owner to decide whether to track it, see DEC-011).
-- LICENSE (CC0), .gitattributes from the initial commit. Nothing else.
+## How to run it
+```bash
+cd frontend && npm install && npm run build && cd ..      # UI (once)
+cd backend && python -m venv .venv && .venv\Scripts\pip install -e .
+.venv\Scripts\python -m app.cli serve                     # http://127.0.0.1:8000
+.venv\Scripts\python -m app.cli ingest --force            # pull real sources
+```
+Dev mode: `python -m app.cli serve --reload` + `npm run dev` (Vite on :5173, /api proxied).
+Gates: backend `ruff check app tests && mypy app && pytest` · frontend
+`npm run lint && npm run typecheck && npm test && npm run build`.
 
-## Key decisions to know before coding
-FastAPI + SQLite-only (FTS5) backend; Vite React SPA served as static files by the
-API in production (one process, one port, one Docker image — DEC-017); flat backend/ +
-frontend/ layout; SVG choropleth via d3-geo/topojson-client with vendored data; no LLM
-code in V1; curated regulatory records (ingestion never writes legal status);
-single-user/no auth; ingestion = feeds/APIs + page_watch hashing only (no HTML
-scrapers), CLI-driven with an optional asyncio scheduler loop; `create_all()` until V1
-schema freeze, then Alembic. Full rationale in DECISIONS.md (note DEC-016…022 from the
-2026-08-11 architecture review supersede parts of DEC-001/006/009/012).
+## What exists (beyond the planning artifacts)
+- `backend/` — FastAPI app: 12-table SQLite schema, SafeFetcher, ingestion pipeline
+  (rss/atom/json_api/page_watch), scoring/dedupe/changes/brief/search services,
+  full REST API, `radar` CLI, 60 offline tests.
+- `frontend/` — React SPA with the full design system and all V1 pages; 11 tests.
+- `data/` — verified source registry (see SOURCE_CATALOG.md outcomes) + curated seed
+  (7 regulations, 7 standards, 7 incidents, flagged demo items).
+- `Dockerfile` + `docker-compose.yml` + `.github/workflows/ci.yml` (see caveats).
+- `docs/reviews/V1-QA.md` — independent QA report + fix outcomes.
 
-## Next step
-1. **Owner approves the plan** (or amends it) — blocking.
-2. Then start **T-001 (backend scaffold)**, followed by T-003 (frontend scaffold) —
-   they're independent and can be split across sessions. T-007 (source verification)
-   is the earliest task needing web access; do it before T-008.
+## Known limitations / first things a next session should check
+1. **CI and Docker have never executed** — no Docker on the dev machine and the repo
+   hasn't been pushed. First push exercises both (CI includes a docker build + smoke
+   job). Expect possible small CI environment fixes.
+2. Automated axe accessibility scan deferred (manual a11y review done).
+3. 10k-item performance smoke not run (trivial at current volumes).
+4. OWASP page_watch source shows occasional dynamic-content hash churn (capped at
+   one signal item/day by design).
+5. Regulation facts were verified as of **2026-01-15** (knowledge-based curation);
+   `last_verified_at` staleness is surfaced in the UI. A maintainer should re-verify
+   against official sources and bump the timestamps.
+6. Incident evidence deep-links were not all live-verified; QA checked structure, not
+   every URL's liveness.
 
-## Open questions for the owner
-- Track the original spec in git (remove its .gitignore line) or keep the normalized
-  PRODUCT_SPEC.md as the sole tracked spec? (DEC-011)
-- License: repo currently carries **CC0**. For an open-source app expecting
-  contributions, MIT or Apache-2.0 is more conventional (Apache adds a patent grant).
-  Owner call — flagged, not changed.
-- Confirm deferral of Rankings/Training/Events *pages* to post-V1 (DEC-010).
+## Next milestones (post-V1, all parked in TASKS.md)
+Phase 2: LLM provider abstraction (see ARCHITECTURE.md §8 for the prompt-injection
+contract), semantic search, summaries. Post-V1 pages: Rankings, Training, Events.
+Alembic baseline migration at first tagged release (DEC-021).
 
 ## How to resume a session
-Read CLAUDE.md → this file → TASKS.md, pick the top non-blocked TODO, set it
-IN PROGRESS, implement per the task's acceptance criteria, verify per TEST_PLAN.md,
-mark DONE, update CHANGELOG.md and this file.
+Read CLAUDE.md → this file → TASKS.md (post-V1 list) → DECISIONS.md (DEC-001…024).
+Keep the hard rules: curated legal facts only, SafeFetcher for all outbound HTTP,
+no LLM code in core, attribution everywhere, demo data always flagged.

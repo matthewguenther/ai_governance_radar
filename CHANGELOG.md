@@ -2,6 +2,43 @@
 
 All notable changes to this project. Dates are UTC.
 
+## [0.1.0] — 2026-08-11 — V1 implementation
+
+### Added
+- **Backend** (Python 3.12 / FastAPI / SQLite WAL + FTS5): 12-table schema, static
+  jurisdictions module, SafeFetcher (SSRF, DNS-rebinding, redirect re-validation,
+  size caps, rate limits), ingestion pipeline (RSS/Atom, JSON API, page_watch hash
+  monitoring), deterministic classification, transparent impact/confidence scoring,
+  conservative dedup clustering, change detection with entity events, deterministic
+  Morning Brief + dashboard summary, watchlist delta derivation, full REST API with
+  OpenAPI docs, `radar` CLI (serve/ingest/seed/status/reindex), optional asyncio
+  scheduler.
+- **Curated seed data**: 7 regulations (Colorado AI Act, EU AI Act, NYC LL144, Utah,
+  CA SB 53, TX TRAIGA, IL HB 3773) with lifecycle events + verification timestamps;
+  7 standards/frameworks (NIST AI RMF + GenAI Profile, ISO 42001/23894, OWASP LLM
+  Top 10 + Agentic, MITRE ATLAS, Singapore MGF); 7 documented public incidents with
+  fact-status labels and evidence links; flagged demo items.
+- **Verified live sources** (2026-08-11): NIST News RSS, Federal Register API, GOV.UK
+  Atom, arXiv API, page-watch on NIST AI RMF / EUR-Lex / MITRE ATLAS / OWASP GenAI /
+  Stanford HAI. CISA + ISO ship disabled (403 for honest non-browser User-Agent).
+- **Frontend** (React / TS / Vite / Tailwind, hand-rolled design system): Dashboard
+  (KPIs, Top Developments, d3-geo choropleth, incidents, standards watch), Morning
+  Brief, Regulatory Radar (table/timeline), Standards, Incidents + report-style
+  detail, Intelligence Feed, Watchlist, entity details with timelines, grouped
+  search, Settings (source health, add-source, import/export, ingest-now), item
+  intelligence drawer with impact-factor breakdown, mobile bottom nav, full
+  empty/error/loading states, explicit 404.
+- **Release engineering**: single Docker image + compose, GitHub Actions CI
+  (backend, frontend, docker smoke), README/CONTRIBUTING/SECURITY/CODE_OF_CONDUCT.
+- **Tests**: 60 backend (offline fixtures, SSRF suite, pipeline scenarios, API
+  contracts) + 11 frontend; ruff/mypy/eslint/tsc clean.
+
+### QA
+- Independent fresh-context QA evaluation (docs/reviews/V1-QA.md): no P0/P1;
+  six P2/P3 findings, five fixed same-day (SSRF creation-time hardening, data
+  repopulation, 404 page, category hydration, source deletion), one accepted
+  (clustering covered by tests).
+
 ## [Unreleased]
 
 ### 2026-08-11 — Skeptical architecture review (same day, second pass)

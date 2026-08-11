@@ -64,7 +64,7 @@ def _resolve_and_check(host: str) -> str:
 
 
 def validate_url(url: str) -> None:
-    """Static checks usable at source-creation time (fetch re-validates too)."""
+    """Static checks (fetch re-validates and resolves too)."""
     parsed = urlparse(url)
     if parsed.scheme not in _ALLOWED_SCHEMES:
         raise FetchBlockedError(f"Scheme not allowed: {parsed.scheme or '(none)'}")
@@ -77,6 +77,16 @@ def validate_url(url: str) -> None:
         return
     if not ip.is_global:
         raise FetchBlockedError(f"Blocked non-public address: {ip}")
+
+
+def validate_url_deep(url: str) -> None:
+    """Creation-time validation (QA-1): static checks PLUS DNS resolution, so
+    `localhost`, decimal-encoded IPs (2130706433), and *.nip.io-style aliases of
+    private addresses are rejected before a source can even be saved. Fetch time
+    re-resolves regardless — this is defense in depth, not the only gate."""
+    validate_url(url)
+    host = urlparse(url).hostname or ""
+    _resolve_and_check(host)
 
 
 class _RateLimiter:
