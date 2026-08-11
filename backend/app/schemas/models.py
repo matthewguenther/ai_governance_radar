@@ -67,6 +67,16 @@ class EntityBrief(ORMModel):
     current_status: str | None
 
 
+class EventDetails(BaseModel):
+    """Schema.org Event fields captured at ingestion (sitemap_events sources)."""
+
+    start: str | None = None
+    end: str | None = None
+    location: str | None = None
+    organizer: str | None = None
+    organizer_url: str | None = None
+
+
 class ItemOut(ORMModel):
     id: int
     url: str
@@ -88,6 +98,7 @@ class ItemOut(ORMModel):
     source_tier: int = 3
     entities: list[EntityBrief] = []
     cluster_size: int = 1
+    event: EventDetails | None = None
 
 
 class PageOut(BaseModel):

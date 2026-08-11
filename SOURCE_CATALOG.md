@@ -36,11 +36,21 @@ ingestion order: official API > RSS/Atom > structured feed > official HTML > sec
 | VentureBeat AI | RSS | ⚠️ parses, but newest entry was ~3 months stale — not adopted |
 | Tortoise Global AI Index | — | ❌ not a live source: annual publication (5th edition, Sept 2024), no API. Useful as a curation reference, not for ingestion. |
 
+### Events — resolved via structured data (2026-08-11)
+Nine event sources were tested (IAPP, OWASP, Stanford HAI, FPF, Brookings, FAccT,
+AI Verify, Turing Institute, NIST) and **none offered RSS, ICS, or an API**.
+
+**Relve (relvehq.com)** was adopted instead: its sitemap lists ~58 event pages and each
+carries schema.org `Event` JSON-LD with name, start/end dates, location, and organizer.
+robots.txt permits crawling (`User-agent: * / Allow: /`). Ingested via the generic
+`sitemap_events` source type (DEC-026), storing metadata and a short excerpt with
+attribution and links back. Coverage is general AI/developer/security conferences —
+including the security events §14 names (Black Hat, DEF CON) — rather than AI
+governance exclusively; the Events page states this.
+
 ### Still needed
-**Events & professional development has no credible open aggregator.** Options are
-(a) curate events as records like regulations, or (b) add individual organizer feeds
-(professional bodies, standards organizations, universities). Until then the Events
-page states its coverage limits plainly rather than implying completeness.
+**Training & certifications** still has no open source. Options: curate credentials as
+records, or add professional-body feeds if any appear.
 
 Tiers (§31): 1 = primary authoritative · 2 = high-quality secondary · 3 = professional
 reporting · 4 = community/discovery (never establishes regulatory facts alone).

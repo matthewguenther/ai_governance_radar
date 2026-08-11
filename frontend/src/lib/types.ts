@@ -66,6 +66,14 @@ export interface ItemOut {
   source_tier: number;
   entities: EntityBrief[];
   cluster_size: number;
+  /** Present on items collected from schema.org Event markup. */
+  event?: {
+    start: string | null;
+    end: string | null;
+    location: string | null;
+    organizer: string | null;
+    organizer_url: string | null;
+  } | null;
 }
 
 export interface PageOut {

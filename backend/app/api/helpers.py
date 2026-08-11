@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models import Entity, Item, ItemEntity, Source, Watch
-from app.schemas.models import EntityBrief, ItemOut
+from app.schemas.models import EntityBrief, EventDetails, ItemOut
 
 
 def item_to_out(db: Session, item: Item, cluster_sizes: dict[int, int] | None = None) -> ItemOut:
@@ -26,6 +26,9 @@ def item_to_out(db: Session, item: Item, cluster_sizes: dict[int, int] | None = 
     out.source_tier = source.reliability_tier if source else 3
     out.entities = entities
     out.cluster_size = cluster_size
+    event_meta = (item.raw_metadata or {}).get("event")
+    if isinstance(event_meta, dict):
+        out.event = EventDetails.model_validate(event_meta)
     return out
 
 

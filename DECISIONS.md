@@ -305,6 +305,25 @@ means since the user *reviewed* the information, not since the process started.
 **Consequences:** Brief always has a day of content; watchlist statuses persist until
 actually viewed; frequent visitors see stable, truthful deltas.
 
+## DEC-026 — Structured-data (schema.org) ingestion is allowed; HTML scraping is not
+**Decision:** Add a `sitemap_events` source type that reads a sitemap, fetches the
+listed pages, and extracts **schema.org JSON-LD** (`@type: Event`). Only pages not
+already stored are fetched, capped per run.
+**Alternatives:** (a) no events feature at all (DEC-020 read strictly); (b) CSS/XPath
+scraping of event listings; (c) manual curation of events.
+**Rationale:** DEC-020 banned bespoke HTML scrapers because they break silently on
+redesigns and cost a small team endless maintenance. JSON-LD is different in kind: it
+is a published standard that sites emit deliberately for machine consumption, the
+parser is generic across any compliant site rather than site-specific, and failure is
+clean — no Event nodes means zero items and a logged run, never garbage. Nine event
+sources were tested and none offered RSS/ICS/API, so the alternative was dropping the
+feature. robots.txt was checked and permits crawling; only metadata plus a short
+excerpt is stored, with attribution and links back (§61, DEC-015).
+**Consequences:** Events have real dates, so the Events page is an upcoming-first
+calendar. First ingest fetches up to 60 pages, then near-zero traffic. The catalogue
+is general AI/developer/security events, not AI-governance-only — stated on the page.
+Curated events remain possible later for governance-specific gatherings.
+
 ## DEC-025 — Production design: "Refined Intelligence Dashboard" (Direction A rev 2)
 **Decision:** Ship Direction A rev 2 as the production visual system: refined
 navy/blue palette with tone-tinted KPI cards, animated radar brand mark (blue

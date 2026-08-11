@@ -100,6 +100,21 @@
     require_ai_relevance: true
 
 # --- Events & professional development --------------------------------------
+- name: Relve — AI & tech events
+  url: https://relvehq.com/events?view=list
+  type: sitemap_events
+  tier: 3
+  category: event
+  polling_interval_minutes: 1440
+  enabled: true
+  attribution: "Event metadata via Relve (relvehq.com); links resolve to the listing."
+  config:
+    sitemap: https://relvehq.com/events-sitemap.xml
+    path_contains: /events/
+    max_pages: 60
+    # Catalogue spans general tech; keep only AI/security-relevant gatherings.
+    require_ai_relevance: true
+
 - name: NIST Events
   url: https://www.nist.gov/news-events/events
   feed_url: https://www.nist.gov/news-events/events/rss.xml
