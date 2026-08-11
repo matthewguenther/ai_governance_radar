@@ -41,6 +41,20 @@ All notable changes to this project. Dates are UTC.
 
 ## [Unreleased]
 
+### 2026-08-11 — V2 design shipped: "Refined Intelligence Dashboard" (DEC-025)
+- Production UI migrated to the owner-approved Direction A rev 2 after a three-way
+  prototype comparison: refreshed tokens (navy surfaces, gradient cards, accent
+  radial wash), animated radar brand mark (blue structure / green sweep + blips),
+  real flag chips (flag-icons + us-state-flags), org monogram avatars, incident
+  category icons, impact rings + confidence dots in rows, filled status pills,
+  tinted KPI cards with sparklines, glowing world-map activity markers with legend,
+  Regulatory Pulse module + live feed strip on the dashboard, refined sidebar/nav.
+- Regulation "effective/enforcement" pill tone: red → green (in force = healthy).
+- Design playground and serif package removed; DESIGN_SYSTEM.md rewritten as the
+  shipped system; Ink & Signal doc marked superseded.
+- Gates: tsc, eslint, 11 vitest, production build all green; desktop + mobile
+  browser-verified.
+
 ### 2026-08-11 — V2 design research & direction (no implementation)
 - Researched reference interfaces (Bloomberg Terminal, FT/Origami, The Economist,
   Our World in Data, Palantir Blueprint, SOC consoles) and critiqued the running V1

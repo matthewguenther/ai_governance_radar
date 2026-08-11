@@ -20,6 +20,7 @@ import {
 import clsx from "clsx";
 
 import { markVisit, useWatchStatuses } from "../../lib/api";
+import { RadarLogo } from "../ui/RadarLogo";
 
 const NAV = [
   { to: "/", label: "Home", icon: LayoutDashboard, end: true },
@@ -82,10 +83,10 @@ export function Shell() {
           onClick={onNavigate}
           className={({ isActive }) =>
             clsx(
-              "group relative flex items-center gap-3 rounded-ctl px-2.5 py-2 text-sm transition-colors",
+              "group relative flex items-center gap-3 rounded-ctl border px-2.5 py-2 text-sm transition-colors",
               isActive
-                ? "bg-bg-raised text-tx-primary before:absolute before:left-0 before:top-1.5 before:h-[calc(100%-12px)] before:w-0.5 before:rounded before:bg-accent"
-                : "text-tx-secondary hover:bg-bg-raised/60 hover:text-tx-primary",
+                ? "border-accent/40 bg-accent/10 text-tx-primary"
+                : "border-transparent text-tx-secondary hover:bg-bg-raised/60 hover:text-tx-primary",
             )
           }
           title={isCollapsed ? label : undefined}
@@ -111,12 +112,12 @@ export function Shell() {
           collapsed ? "w-16" : "w-60",
         )}
       >
-        <div className={clsx("flex items-center gap-2 px-4 py-4", collapsed && "justify-center px-2")}>
-          <Radar aria-hidden className="h-5 w-5 shrink-0 text-accent" />
+        <div className={clsx("flex items-center gap-2.5 px-4 py-4", collapsed && "justify-center px-2")}>
+          <RadarLogo size={collapsed ? 28 : 34} />
           {!collapsed && (
             <div className="leading-tight">
-              <p className="text-sm font-semibold tracking-wide text-tx-primary">AI GOVERNANCE</p>
-              <p className="font-mono text-meta text-accent">RADAR</p>
+              <p className="text-sm font-semibold text-tx-primary">AI Governance</p>
+              <p className="font-mono text-[9.5px] tracking-[0.26em] text-accent">RADAR</p>
             </div>
           )}
         </div>
@@ -156,7 +157,10 @@ export function Shell() {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+            <span className="hidden font-mono text-[11px] text-tx-muted lg:block">
+              {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+            </span>
             <GlobalSearch />
           </div>
         </header>

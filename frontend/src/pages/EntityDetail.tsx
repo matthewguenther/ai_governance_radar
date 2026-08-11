@@ -7,6 +7,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { ItemDetailDrawer } from "../components/items/ItemDetailDrawer";
 import { ItemRow } from "../components/items/ItemRow";
 import { ConfidenceBadge, DemoBadge, StatusPill } from "../components/ui/Badge";
+import { FlagChip } from "../components/ui/FlagChip";
 import { CardSkeleton, EmptyState, ErrorState } from "../components/ui/States";
 import { WatchButton } from "../components/ui/WatchButton";
 import { useEntity, useItems } from "../lib/api";
@@ -46,6 +47,9 @@ export default function EntityDetail() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex flex-wrap items-center gap-1.5">
+            {e.jurisdiction_code && (
+              <FlagChip code={e.jurisdiction_code} size={22} title={e.jurisdiction_code} />
+            )}
             <span className="meta-label">{titleCase(e.entity_type)}</span>
             {e.jurisdiction_code && <span className="meta-label">{e.jurisdiction_code}</span>}
             {reg && <StatusPill status={reg.status} kind="regulation" />}

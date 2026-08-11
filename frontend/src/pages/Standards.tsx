@@ -5,6 +5,7 @@ import { ExternalLink } from "lucide-react";
 
 import { PageHeader } from "../components/layout/PageHeader";
 import { DemoBadge, StatusPill } from "../components/ui/Badge";
+import { OrgAvatar } from "../components/ui/OrgAvatar";
 import { CardSkeleton, EmptyState, ErrorState } from "../components/ui/States";
 import { WatchButton } from "../components/ui/WatchButton";
 import { useStandards } from "../lib/api";
@@ -82,7 +83,10 @@ export default function Standards() {
             return (
               <article key={e.slug} className="card hover-card flex flex-col p-4">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="meta-label">{s.publisher}</span>
+                  <span className="flex items-center gap-2">
+                    <OrgAvatar name={`${s.publisher} ${e.name}`} size={24} />
+                    <span className="meta-label">{s.publisher}</span>
+                  </span>
                   <StatusPill status={s.status} kind="standard" />
                 </div>
                 <Link to={`/entities/${e.slug}`} className="mt-1.5 text-sm font-semibold text-tx-primary hover:text-accent">

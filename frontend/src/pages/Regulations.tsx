@@ -5,6 +5,7 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import { PageHeader } from "../components/layout/PageHeader";
 import { ConfidenceBadge, DemoBadge, StatusPill } from "../components/ui/Badge";
+import { FlagChip } from "../components/ui/FlagChip";
 import { CardSkeleton, EmptyState, ErrorState } from "../components/ui/States";
 import { WatchButton } from "../components/ui/WatchButton";
 import { useJurisdictions, useRegulations } from "../lib/api";
@@ -129,8 +130,11 @@ export default function Regulations() {
                 const lastUpdate = r.last_amended_at ?? r.signed_at ?? r.passed_at ?? r.introduced_at;
                 return (
                   <tr key={e.slug} className="border-b border-bd-subtle transition-colors last:border-b-0 hover:bg-bg-raised/40">
-                    <td className="whitespace-nowrap px-3 py-2.5 font-mono text-xs text-tx-secondary">
-                      {e.jurisdiction_code}
+                    <td className="whitespace-nowrap px-3 py-2.5">
+                      <span className="flex items-center gap-2 font-mono text-xs text-tx-secondary">
+                        <FlagChip code={e.jurisdiction_code ?? "GLOBAL"} size={20} title={e.jurisdiction_code ?? undefined} />
+                        {e.jurisdiction_code}
+                      </span>
                     </td>
                     <td className="px-3 py-2.5">
                       <Link to={`/entities/${e.slug}`} className="font-medium text-tx-primary hover:text-accent">

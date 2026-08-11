@@ -88,14 +88,18 @@ const item: ItemOut = {
 };
 
 describe("ItemRow", () => {
-  it("renders badges, source, cluster count, and DEMO flag", () => {
+  it("renders avatar, impact ring, source, cluster count, and DEMO flag", () => {
     const onOpen = vi.fn();
     render(<MemoryRouter><ItemRow item={item} onOpen={onOpen} /></MemoryRouter>);
     expect(screen.getByText("Colorado AI Act guidance")).toBeInTheDocument();
-    expect(screen.getByText(/High impact 72/)).toBeInTheDocument();
+    // impact ring: accessible label + visible score text (never color-only)
+    expect(screen.getByRole("img", { name: /impact score 72/i })).toBeInTheDocument();
+    expect(screen.getByText("72")).toBeInTheDocument();
     expect(screen.getByText("Test Source")).toBeInTheDocument();
-    expect(screen.getByText(/3 sources/)).toBeInTheDocument();
+    expect(screen.getByText(/3 src/)).toBeInTheDocument();
     expect(screen.getByText("DEMO DATA")).toBeInTheDocument();
+    // jurisdiction flag chip renders for US-CO
+    expect(screen.getAllByTitle("US-CO").length).toBeGreaterThan(0);
     screen.getByRole("button").click();
     expect(onOpen).toHaveBeenCalledWith(item);
   });

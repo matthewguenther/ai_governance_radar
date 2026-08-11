@@ -1,4 +1,4 @@
-// Type shims for prototype-only flag packages (TEMPORARY, delete with this folder).
+// Type shims for flag asset packages.
 declare module "us-state-flags/USStateFlags" {
   import * as React from "react";
   export interface USStateFlagsProps {
@@ -9,7 +9,7 @@ declare module "us-state-flags/USStateFlags" {
     className?: string;
     style?: React.CSSProperties;
   }
-  export const USStateFlags: React.FC<USStateFlagsProps>;
+  const USStateFlags: React.FC<USStateFlagsProps>;
   export default USStateFlags;
 }
 

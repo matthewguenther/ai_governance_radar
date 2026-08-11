@@ -1,6 +1,12 @@
 # Agent Handoff
 
-_Last updated: 2026-08-11 (V1 implementation session)_
+_Last updated: 2026-08-11 (V2 design shipped)_
+
+> **Design note:** The production UI now uses the owner-approved "Refined
+> Intelligence Dashboard" system (DEC-025, DESIGN_SYSTEM.md): animated radar mark,
+> real flag/org iconography (`flag-icons`, `us-state-flags`), impact rings, tinted
+> KPI cards, glowing map markers. The design playground that drove the choice has
+> been deleted. Everything below about V1 functionality remains accurate.
 
 ## Where the project stands
 **V1 is implemented, tested, QA-reviewed, and functional.** The app runs locally with

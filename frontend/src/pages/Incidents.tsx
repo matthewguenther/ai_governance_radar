@@ -4,6 +4,8 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import { PageHeader } from "../components/layout/PageHeader";
 import { ConfidenceBadge, DemoBadge, FactStatusBadge, SeverityBadge } from "../components/ui/Badge";
+import { IncidentIcon } from "../components/ui/IncidentIcon";
+import { severityColor } from "../lib/tokens";
 import { CardSkeleton, EmptyState, ErrorState } from "../components/ui/States";
 import { useIncidents } from "../lib/api";
 import { relativeTime, titleCase } from "../lib/format";
@@ -79,23 +81,26 @@ export default function Incidents() {
         <ul className="space-y-3">
           {incidents.data.map((inc) => (
             <li key={inc.id}>
-              <Link to={`/incidents/${inc.id}`} className="card hover-card block p-4">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <SeverityBadge severity={inc.severity} />
-                  <FactStatusBadge status={inc.fact_status} />
-                  <ConfidenceBadge confidence={inc.confidence} />
-                  <DemoBadge show={inc.is_demo} />
-                  <span className="ml-auto font-mono text-meta text-tx-muted">
-                    {relativeTime(inc.reported_at)}
+              <Link to={`/incidents/${inc.id}`} className="card hover-card flex gap-3.5 p-4">
+                <IncidentIcon category={inc.category} tone={severityColor(inc.severity)} size={34} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    <SeverityBadge severity={inc.severity} />
+                    <FactStatusBadge status={inc.fact_status} />
+                    <ConfidenceBadge confidence={inc.confidence} />
+                    <DemoBadge show={inc.is_demo} />
+                    <span className="ml-auto font-mono text-meta text-tx-muted">
+                      {relativeTime(inc.reported_at)}
+                    </span>
                   </span>
-                </div>
-                <p className="mt-2 text-sm font-semibold text-tx-primary">{inc.title}</p>
-                <p className="mt-1 line-clamp-2 text-xs text-tx-secondary">{inc.what_happened}</p>
-                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-meta text-tx-muted">
-                  <span>{titleCase(inc.category)}</span>
-                  {inc.system_vendor && <span>{inc.system_vendor}</span>}
-                  {inc.geography && <span>{inc.geography}</span>}
-                </div>
+                  <span className="mt-2 block text-sm font-semibold text-tx-primary">{inc.title}</span>
+                  <span className="mt-1 line-clamp-2 block text-xs text-tx-secondary">{inc.what_happened}</span>
+                  <span className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-meta text-tx-muted">
+                    <span>{titleCase(inc.category)}</span>
+                    {inc.system_vendor && <span>{inc.system_vendor}</span>}
+                    {inc.geography && <span>{inc.geography}</span>}
+                  </span>
+                </span>
               </Link>
             </li>
           ))}

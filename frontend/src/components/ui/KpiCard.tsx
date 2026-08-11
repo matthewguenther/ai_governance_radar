@@ -1,45 +1,75 @@
-/** Clickable KPI card (§19). */
+/** Clickable KPI card — approved tinted "alive" treatment with icon + sparkline. */
 
-import clsx from "clsx";
+import type { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+
+import { T } from "../../lib/tokens";
+import { Sparkline } from "./charts";
+
+const TONES = {
+  critical: T.critical,
+  accent: T.accent,
+  high: T.high,
+  positive: T.positive,
+  info: T.info,
+} as const;
 
 export function KpiCard({
   label,
   value,
   to,
-  tone = "default",
+  tone = "accent",
   sub,
+  icon: Icon,
+  spark,
   loading = false,
 }: {
   label: string;
   value: number | string;
   to: string;
-  tone?: "default" | "critical" | "info" | "positive";
+  tone?: keyof typeof TONES;
   sub?: string;
+  icon?: LucideIcon;
+  spark?: number[];
   loading?: boolean;
 }) {
+  const c = TONES[tone];
+  const active = Number(value) > 0;
   return (
     <Link
       to={to}
-      className={clsx(
-        "card hover-card block p-4",
-        tone === "critical" && Number(value) > 0 && "shadow-glow border-sev-critical/40",
-      )}
+      className="block rounded-card shadow-card transition-transform duration-150 hover:-translate-y-px"
+      style={{
+        background: `linear-gradient(135deg, ${c}1C 0%, ${c}08 55%, transparent 100%), ${T.bgSurface}`,
+        border: `1px solid ${c}3D`,
+      }}
     >
-      <p className="meta-label">{label}</p>
-      {loading ? (
-        <div className="mt-2 h-8 w-14 animate-pulse rounded bg-bg-raised" />
-      ) : (
-        <p
-          className={clsx(
-            "mt-1 font-mono text-kpi font-medium tabular-nums",
-            tone === "critical" && Number(value) > 0 ? "text-sev-critical" : "text-tx-primary",
+      <div className="flex items-start justify-between p-4">
+        <div className="flex gap-3">
+          {loading ? (
+            <span className="mt-1 h-8 w-12 animate-pulse rounded bg-bg-raised" />
+          ) : (
+            <span
+              className="font-mono text-kpi font-semibold tabular-nums"
+              style={{ color: active ? c : T.txMuted }}
+            >
+              {value}
+            </span>
           )}
-        >
-          {value}
-        </p>
-      )}
-      {sub && <p className="mt-1 text-xs text-tx-muted">{sub}</p>}
+          <span className="mt-0.5">
+            <span className="block text-xs font-semibold text-tx-primary">{label}</span>
+            {sub && <span className="mt-0.5 block text-[10.5px] text-tx-secondary">{sub}</span>}
+          </span>
+        </div>
+        <span className="text-right">
+          {Icon && <Icon aria-hidden size={15} color={c} style={{ opacity: 0.9, display: "inline" }} />}
+          {spark && (
+            <span className="mt-2 block opacity-85">
+              <Sparkline data={spark} width={64} height={20} stroke={c} fill={`${c}18`} />
+            </span>
+          )}
+        </span>
+      </div>
     </Link>
   );
 }

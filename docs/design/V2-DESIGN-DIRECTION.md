@@ -1,6 +1,12 @@
 # V2 Design Direction — "Ink & Signal"
 
-**Status: PROPOSED — awaiting owner approval. No implementation yet.**
+**Status: SUPERSEDED (2026-08-11).** After prototyping three directions, the owner
+selected **Direction A — "Refined Intelligence Dashboard" (rev 2)**, which now ships
+as the production design; see [DESIGN_SYSTEM.md](../../DESIGN_SYSTEM.md). This
+document is retained as design research: its critique of the original V1 UI and its
+reference analysis informed the shipped direction (density discipline, color-as-data,
+status-strip thinking), while its warm-ink/serif/Bloomberg-mosaic proposals were
+explored as prototype Directions B and C and not adopted.
 Scope: visual design and UX only. The widget/module dashboard concept, information
 architecture, functionality, schema, APIs, and ingestion are all unchanged by this
 document. The modular, scannable, multi-domain dashboard is a core product asset and

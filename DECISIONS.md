@@ -304,3 +304,23 @@ seconds after showing what happened. "What changed since I last looked?" (§25/�
 means since the user *reviewed* the information, not since the process started.
 **Consequences:** Brief always has a day of content; watchlist statuses persist until
 actually viewed; frequent visitors see stable, truthful deltas.
+
+## DEC-025 — Production design: "Refined Intelligence Dashboard" (Direction A rev 2)
+**Decision:** Ship Direction A rev 2 as the production visual system: refined
+navy/blue palette with tone-tinted KPI cards, animated radar brand mark (blue
+structure, green sweep/blips), real flag + organization iconography, impact rings,
+filled status pills, glowing map activity markers, module color-ticks, live-feed
+indicators. Documented in DESIGN_SYSTEM.md.
+**Alternatives:** the "Ink & Signal" warm-ink/serif terminal proposal
+(docs/design/V2-DESIGN-DIRECTION.md); prototype Direction B (dense carbon terminal);
+prototype Direction C (editorial paper). All three were built as live prototypes on
+real data and compared in-browser by the owner.
+**Rationale:** Owner judgment after side-by-side comparison: A preserved the liked
+widget-dashboard concept while feeling premium and "alive"; B/C pushed too far toward
+financial-terminal/publication registers.
+**Consequences:** Two new runtime dependencies for authentic iconography —
+`flag-icons` (countries) and `us-state-flags` (US states) — both bundling SVGs
+locally (local-first preserved). The prototype playground and the serif font package
+were removed. Semantic color meanings and all V1 accessibility rules carried over;
+regulation "effective/enforcement" pill tone changed from red to green (in force =
+healthy), with status text always present.

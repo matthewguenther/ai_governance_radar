@@ -14,11 +14,6 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Standards from "./pages/Standards";
 import Watchlist from "./pages/Watchlist";
-// TEMPORARY design playground (delete folder + these routes after direction chosen)
-import DesignIndex from "./design-prototypes/DesignIndex";
-import DirectionA from "./design-prototypes/DirectionA";
-import DirectionB from "./design-prototypes/DirectionB";
-import DirectionC from "./design-prototypes/DirectionC";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,11 +25,6 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>
-        {/* TEMPORARY design playground — standalone, outside the production Shell */}
-        <Route path="design" element={<DesignIndex />} />
-        <Route path="design/a" element={<DirectionA />} />
-        <Route path="design/b" element={<DirectionB />} />
-        <Route path="design/c" element={<DirectionC />} />
         <Route element={<Shell />}>
           <Route index element={<Dashboard />} />
           <Route path="brief" element={<Brief />} />

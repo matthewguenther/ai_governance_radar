@@ -1,18 +1,20 @@
-/** Badges/pills per DESIGN_SYSTEM.md — never color-only: every state carries text. */
+/** Badges/pills — approved "alive" treatment: filled tinted pills with text
+ * (never color-only) and outline micro-pills for low-emphasis metadata. */
 
 import clsx from "clsx";
 
 type Severity = "critical" | "high" | "watch" | "positive" | "info" | "emerging";
 
-const SEV_STYLES: Record<Severity, string> = {
-  critical: "text-sev-critical bg-sev-critical/10 border-sev-critical/30",
-  high: "text-sev-high bg-sev-high/10 border-sev-high/30",
-  watch: "text-sev-watch bg-sev-watch/10 border-sev-watch/30",
-  positive: "text-sev-positive bg-sev-positive/10 border-sev-positive/30",
-  info: "text-sev-info bg-sev-info/10 border-sev-info/30",
-  emerging: "text-sev-emerging bg-sev-emerging/10 border-sev-emerging/30",
+const FILL_STYLES: Record<Severity, string> = {
+  critical: "text-sev-critical bg-sev-critical/15 border-sev-critical/40",
+  high: "text-sev-high bg-sev-high/15 border-sev-high/40",
+  watch: "text-sev-watch bg-sev-watch/15 border-sev-watch/40",
+  positive: "text-sev-positive bg-sev-positive/15 border-sev-positive/40",
+  info: "text-sev-info bg-sev-info/15 border-sev-info/40",
+  emerging: "text-sev-emerging bg-sev-emerging/15 border-sev-emerging/40",
 };
 
+/** Filled status pill — primary status treatment. */
 export function Pill({
   tone = "info",
   children,
@@ -28,12 +30,29 @@ export function Pill({
     <span
       title={title}
       className={clsx(
-        "inline-flex items-center gap-1 rounded-full border px-2 py-[1px] font-mono text-meta uppercase",
-        SEV_STYLES[tone],
+        "inline-flex items-center rounded-ctl border px-2 py-[2px] text-[10.5px] font-semibold capitalize tracking-wide",
+        FILL_STYLES[tone],
         className,
       )}
     >
-      <span aria-hidden className="text-[8px] leading-none">●</span>
+      {children}
+    </span>
+  );
+}
+
+/** Outline micro-pill — quiet metadata (categories, jurisdiction codes). */
+export function MicroPill({ children, className, title, dashed = false }: {
+  children: React.ReactNode; className?: string; title?: string; dashed?: boolean;
+}) {
+  return (
+    <span
+      title={title}
+      className={clsx(
+        "inline-flex items-center rounded-[5px] border border-bd-strong px-1.5 py-[1px] font-mono text-[10px] uppercase tracking-wide text-tx-muted",
+        dashed && "border-dashed",
+        className,
+      )}
+    >
       {children}
     </span>
   );
@@ -77,14 +96,7 @@ export function TierBadge({ tier }: { tier: number }) {
     3: "Tier 3 — professional reporting",
     4: "Tier 4 — community / discovery",
   };
-  return (
-    <span
-      title={titles[tier] ?? `Tier ${tier}`}
-      className="inline-flex items-center rounded border border-bd-strong px-1.5 py-[1px] font-mono text-meta text-tx-secondary"
-    >
-      T{tier}
-    </span>
-  );
+  return <MicroPill title={titles[tier] ?? `Tier ${tier}`}>T{tier}</MicroPill>;
 }
 
 const REG_STATUS_TONE: Record<string, Severity> = {
@@ -92,9 +104,9 @@ const REG_STATUS_TONE: Record<string, Severity> = {
   introduced: "info",
   passed: "watch",
   signed: "high",
-  effective: "critical",
+  effective: "positive",
   amended: "high",
-  enforcement: "critical",
+  enforcement: "positive",
 };
 
 const STD_STATUS_TONE: Record<string, Severity> = {
@@ -116,12 +128,9 @@ export function StatusPill({ status, kind }: { status: string; kind: "regulation
 export function DemoBadge({ show }: { show: boolean }) {
   if (!show) return null;
   return (
-    <span
-      title="Seeded demonstration data — not live intelligence"
-      className="inline-flex items-center rounded border border-dashed border-tx-muted px-1.5 py-[1px] font-mono text-meta text-tx-muted"
-    >
+    <MicroPill dashed title="Seeded demonstration data — not live intelligence">
       DEMO DATA
-    </span>
+    </MicroPill>
   );
 }
 

@@ -1,19 +1,20 @@
-/** Design tokens from DESIGN_SYSTEM.md — dark-first intelligence terminal. */
+/** Design tokens — "Refined Intelligence Dashboard" (approved Direction A rev 2).
+ * Keep hex values in sync with src/lib/tokens.ts (used for inline SVG/dynamic styles). */
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        bg: { base: "#0B0E14", surface: "#12161F", raised: "#1A2029" },
-        bd: { subtle: "#232B36", strong: "#33404F" },
-        tx: { primary: "#E8EDF4", secondary: "#9AA7B8", muted: "#5E6B7E" },
-        accent: "#4D9FFF",
+        bg: { base: "#090C12", surface: "#10151E", raised: "#1A2230" },
+        bd: { subtle: "#1E2836", strong: "#2C3A4E" },
+        tx: { primary: "#E8EDF5", secondary: "#8FA0B5", muted: "#5C6B80" },
+        accent: "#628BFF",
         sev: {
-          critical: "#F0554D",
+          critical: "#F2564D",
           high: "#F2913D",
           watch: "#E5C445",
           positive: "#3FBF77",
-          info: "#4D9FFF",
+          info: "#5B9BD8",
           emerging: "#A78BFA",
         },
       },
@@ -28,12 +29,14 @@ export default {
         base: ["14px", "1.45"],
         lg: ["16px", "1.4"],
         xl: ["20px", "1.35"],
-        kpi: ["28px", "1.1"],
+        kpi: ["30px", "1.15"],
       },
-      borderRadius: { card: "10px", ctl: "6px" },
+      borderRadius: { card: "12px", ctl: "8px" },
       boxShadow: {
-        card: "0 1px 2px rgba(0,0,0,.4)",
-        glow: "0 0 12px rgba(240,85,77,.15)",
+        card: "0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.045)",
+      },
+      backgroundImage: {
+        surface: "linear-gradient(180deg, #131A26 0%, #0F141D 100%)",
       },
     },
   },

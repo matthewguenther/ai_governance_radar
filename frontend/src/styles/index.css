@@ -15,6 +15,9 @@
   }
   body {
     @apply font-sans text-base;
+    background:
+      radial-gradient(1200px 500px at 70% -10%, rgba(98, 139, 255, 0.07), transparent),
+      theme("colors.bg.base");
   }
   *:focus-visible {
     @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-bg-base;
@@ -29,7 +32,7 @@
 
 @layer components {
   .card {
-    @apply rounded-card border border-bd-subtle bg-bg-surface shadow-card;
+    @apply rounded-card border border-bd-subtle bg-surface shadow-card overflow-hidden;
   }
   .meta-label {
     @apply font-mono text-meta uppercase tracking-wider text-tx-muted;
@@ -37,4 +40,21 @@
   .hover-card {
     @apply transition-colors duration-150 hover:border-bd-strong;
   }
+  /* Module header color tick (approved widget language) */
+  .head-tick {
+    @apply inline-block h-3.5 w-[3px] rounded-sm;
+  }
+}
+
+/* Radar logo animation (structure blue, sweep + blips green) */
+@keyframes radar-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes radar-blip {
+  0%, 12% { opacity: 0.95; }
+  45%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep { animation: none !important; opacity: 0.35; }
+  .radar-blip { animation: none !important; opacity: 0.7; }
 }
