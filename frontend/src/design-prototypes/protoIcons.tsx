@@ -11,7 +11,13 @@ import {
 
 /* ---------------- animated radar logo ---------------- */
 
-export function RadarLogo({ size = 34, accent = "#628BFF" }: { size?: number; accent?: string }) {
+export function RadarLogo({ size = 34, accent = "#628BFF", sweep = "#3FBF77" }: {
+  size?: number;
+  /** rings / crosshairs / center — the radar hardware (blue) */
+  accent?: string;
+  /** beam + contact blips — the live signal (green, per owner feedback) */
+  sweep?: string;
+}) {
   return (
     <span style={{ position: "relative", width: size, height: size, display: "inline-block", flexShrink: 0 }} aria-hidden>
       <style>{`
@@ -22,13 +28,13 @@ export function RadarLogo({ size = 34, accent = "#628BFF" }: { size?: number; ac
           .proto-radar-blip { animation: none !important; opacity: .7; }
         }
       `}</style>
-      {/* sweep */}
+      {/* sweep beam (green) */}
       <span className="proto-radar-sweep" style={{
         position: "absolute", inset: 2, borderRadius: "50%",
-        background: `conic-gradient(from 0deg, ${accent}66 0deg, ${accent}22 40deg, transparent 80deg, transparent 360deg)`,
+        background: `conic-gradient(from 0deg, ${sweep}77 0deg, ${sweep}26 40deg, transparent 80deg, transparent 360deg)`,
         animation: "protoRadarSpin 5s linear infinite",
       }} />
-      {/* rings + blips */}
+      {/* radar structure (blue) + contact blips (green) */}
       <svg width={size} height={size} viewBox="0 0 34 34" style={{ position: "relative" }}>
         <circle cx="17" cy="17" r="15" fill="none" stroke={accent} strokeWidth="1.4" opacity=".85" />
         <circle cx="17" cy="17" r="10" fill="none" stroke={accent} strokeWidth="0.8" opacity=".4" />
@@ -36,9 +42,9 @@ export function RadarLogo({ size = 34, accent = "#628BFF" }: { size?: number; ac
         <line x1="2" y1="17" x2="32" y2="17" stroke={accent} strokeWidth="0.5" opacity=".2" />
         <line x1="17" y1="2" x2="17" y2="32" stroke={accent} strokeWidth="0.5" opacity=".2" />
         <circle cx="17" cy="17" r="1.6" fill={accent} />
-        <circle className="proto-radar-blip" cx="24" cy="10" r="1.7" fill={accent}
+        <circle className="proto-radar-blip" cx="24" cy="10" r="1.7" fill={sweep}
           style={{ animation: "protoRadarBlip 5s linear infinite" }} />
-        <circle className="proto-radar-blip" cx="10" cy="22" r="1.4" fill={accent}
+        <circle className="proto-radar-blip" cx="10" cy="22" r="1.4" fill={sweep}
           style={{ animation: "protoRadarBlip 5s linear infinite", animationDelay: "2.4s" }} />
       </svg>
     </span>
