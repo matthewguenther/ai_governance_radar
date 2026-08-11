@@ -22,22 +22,34 @@ def get_last_visit(db: Session) -> datetime | None:
     return None
 
 
-def mark_visit(db: Session) -> None:
+def mark_visit(db: Session, include_watches: bool = False) -> None:
     now = datetime.now(UTC).isoformat()
     row = db.get(AppState, LAST_VISIT_KEY)
     if row is None:
         db.add(AppState(key=LAST_VISIT_KEY, value=now))
     else:
         row.value = now
+    if include_watches:
+        for watch in db.execute(select(Watch)).scalars():
+            watch.last_viewed_at = datetime.now(UTC)
+    db.commit()
+
+
+def mark_watches_viewed(db: Session) -> None:
+    """Reset watch deltas — called when the user actually views the watchlist."""
     for watch in db.execute(select(Watch)).scalars():
         watch.last_viewed_at = datetime.now(UTC)
     db.commit()
 
 
 def _since(db: Session, window_days: int | None) -> datetime:
+    """Coverage window: explicit window, or since-last-visit with a 24h floor so the
+    brief always covers at least a full day (§25 — frequent visits shouldn't blank it)."""
+    now = datetime.now(UTC)
     if window_days:
-        return datetime.now(UTC) - timedelta(days=window_days)
-    return get_last_visit(db) or (datetime.now(UTC) - timedelta(days=7))
+        return now - timedelta(days=window_days)
+    last_visit = get_last_visit(db) or (now - timedelta(days=7))
+    return min(last_visit, now - timedelta(hours=24))
 
 
 def _cat_count(db: Session, since: datetime, category: str) -> int:

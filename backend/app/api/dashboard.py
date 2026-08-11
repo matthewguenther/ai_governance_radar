@@ -30,6 +30,12 @@ def mark_visit(db: Session = Depends(get_db)) -> dict:
     return {"ok": True}
 
 
+@router.post("/watchlist/mark-viewed")
+def mark_watchlist_viewed(db: Session = Depends(get_db)) -> dict:
+    brief_service.mark_watches_viewed(db)
+    return {"ok": True}
+
+
 @router.get("/brief")
 def morning_brief(
     window_days: int | None = Query(default=None, ge=1, le=365),
