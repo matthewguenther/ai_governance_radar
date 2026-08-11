@@ -305,7 +305,32 @@ means since the user *reviewed* the information, not since the process started.
 **Consequences:** Brief always has a day of content; watchlist statuses persist until
 actually viewed; frequent visitors see stable, truthful deltas.
 
+## DEC-027 — Events & Training removed from the product (supersedes DEC-026)
+**Decision:** Remove the Events & Training page, the "New Opportunities" KPI, the
+`sitemap_events` source type and its schema.org Event parser, the Relve and NIST
+Events sources, and the `event`/`training` classification rules. The dashboard's
+fourth KPI becomes **Sources reporting** (healthy/enabled), linking to Settings.
+The `event`/`training` category *values* remain valid in the data model in case a
+dedicated source is ever added.
+**Alternatives:** keep the working Relve-backed calendar (DEC-026); curate events
+manually; keep the page with an honest empty state.
+**Rationale:** Owner decision after seeing the working implementation. Even with real
+structured data, the available catalogue was general AI/developer/security
+conferences rather than AI governance events, and training/certifications had no
+source at all. A feature that cannot be made reliably relevant is worth less than the
+maintenance and attention it costs — "signal over volume" (§77) applied to features,
+not just items. The replacement KPI is always backed by real data and answers whether
+the other three numbers can be trusted.
+**Consequences:** Deviates from spec §13/§14 (Training, Events domains) and §19's
+"New Opportunities" KPI; PRODUCT_SPEC.md records the deviation. 28 collected event
+items and their two sources were deleted. Restoring the feature means reverting this
+commit — the parser was well-tested and is in git history.
+
 ## DEC-026 — Structured-data (schema.org) ingestion is allowed; HTML scraping is not
+> **Superseded by DEC-027** — the events feature it enabled was removed, and the
+> `sitemap_events` parser with it. Retained because the reasoning still applies if
+> structured-data ingestion is ever revisited: JSON-LD parsing is standards-based and
+> fails cleanly, unlike the bespoke HTML scrapers DEC-020 rules out.
 **Decision:** Add a `sitemap_events` source type that reads a sitemap, fetches the
 listed pages, and extracts **schema.org JSON-LD** (`@type: Event`). Only pages not
 already stored are fetched, capped per run.

@@ -20,15 +20,9 @@ CATEGORY_RULES: list[tuple[str, str]] = [
     (r"\b(security|vulnerab|exploit|attack|injection|jailbreak|malware|threat|cve|"
      r"red.team|adversarial)\b", "security"),
     (r"\b(research|study|paper|preprint|arxiv|benchmark|evaluation)\b", "research"),
-    # Events must be *announcements of a gathering*, not articles that merely
-    # mention one ("…said at a conference"). Anything looser mislabels news.
-    (r"\b(webinar|call for papers|registration (is )?(now )?open|save the date|"
-     r"will host (a |an )?(workshop|summit|conference|symposium)|"
-     r"(workshop|symposium|summit) on \w+)\b", "event"),
-    # No keyword rule for `training`: "AI training" means model training, and
-    # "credential" appears in credential-theft security stories. Professional
-    # development is recognised only from a source declared to publish it
-    # (Source.category_default), never inferred from prose.
+    # No `event` or `training` rules: professional-development tracking was removed
+    # (DEC-027) because no source publishes it reliably enough to be worth showing.
+    # Both remain valid category values should a dedicated source ever be added.
     (r"\b(index|ranking|readiness)\b", "ranking"),
 ]
 

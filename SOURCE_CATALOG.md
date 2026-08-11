@@ -36,21 +36,16 @@ ingestion order: official API > RSS/Atom > structured feed > official HTML > sec
 | VentureBeat AI | RSS | ⚠️ parses, but newest entry was ~3 months stale — not adopted |
 | Tortoise Global AI Index | — | ❌ not a live source: annual publication (5th edition, Sept 2024), no API. Useful as a curation reference, not for ingestion. |
 
-### Events — resolved via structured data (2026-08-11)
+### Events & training — feature removed (2026-08-11, DEC-027)
 Nine event sources were tested (IAPP, OWASP, Stanford HAI, FPF, Brookings, FAccT,
-AI Verify, Turing Institute, NIST) and **none offered RSS, ICS, or an API**.
+AI Verify, Turing Institute, NIST) and **none offered RSS, ICS, or an API**. NIST's
+events feed works but carried 0 AI-related entries out of 40.
 
-**Relve (relvehq.com)** was adopted instead: its sitemap lists ~58 event pages and each
-carries schema.org `Event` JSON-LD with name, start/end dates, location, and organizer.
-robots.txt permits crawling (`User-agent: * / Allow: /`). Ingested via the generic
-`sitemap_events` source type (DEC-026), storing metadata and a short excerpt with
-attribution and links back. Coverage is general AI/developer/security conferences —
-including the security events §14 names (Black Hat, DEF CON) — rather than AI
-governance exclusively; the Events page states this.
-
-### Still needed
-**Training & certifications** still has no open source. Options: curate credentials as
-records, or add professional-body feeds if any appear.
+A structured-data route did work — relvehq.com publishes schema.org `Event` JSON-LD
+across ~58 sitemap-listed pages — but its catalogue is general AI/developer/security
+conferences rather than AI governance, and training/certifications had no source at
+all. The feature was removed rather than shipped at low relevance. If revisited,
+the implementation is in git history (DEC-026) and the research above still stands.
 
 Tiers (§31): 1 = primary authoritative · 2 = high-quality secondary · 3 = professional
 reporting · 4 = community/discovery (never establishes regulatory facts alone).

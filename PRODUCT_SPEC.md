@@ -71,8 +71,9 @@ in the data model (as item categories) but get no dedicated pages in V1. See DEC
 - **Curated news** (§11) — prioritized by regulatory/standards/incident/security relevance;
   generic model-release news only when governance-relevant. In V1: category + impact
   filtering, no dedicated page beyond items views.
-- **Dashboard** (§17–21): KPI cards (High Impact / Total Changes / Incidents / New
-  Opportunities — each click-through to a filtered view), Top Developments (5–7 items with
+- **Dashboard** (§17–21): KPI cards (High Impact / Total Changes / Incident Reports /
+  Sources Reporting — each click-through to a filtered view; §19's "New Opportunities"
+  KPI was replaced when Events & Training was removed, DEC-027), Top Developments (5–7 items with
   severity badge, source, category, one-line explanation, relative time, link), global
   regulatory heat map (clearly labeled metric; color ≠ good/bad), incidents card, standards
   watch card.
@@ -107,8 +108,10 @@ in the data model (as item categories) but get no dedicated pages in V1. See DEC
 ### Explicitly deferred (with phase)
 
 - Dedicated Rankings & Indices pages (§12) — Phase 2+ (data model supports snapshots)
-- Dedicated Training & Certifications page (§13) — Phase 2+ (ingested as items/categories)
-- Dedicated Conferences & Webinars page (§14) — Phase 2+ (ingested as items/categories)
+- Training & Certifications (§13) and Conferences & Webinars (§14) — **removed from the
+  product** (DEC-027), not merely deferred: no source publishes AI-governance events or
+  credentials reliably enough to be worth showing. Category values remain in the data
+  model should a dedicated source appear.
 - LLM provider abstraction, OpenRouter/Ollama/OpenAI-compatible/Anthropic providers,
   model routing, semantic search, structured summaries (§33–38) — **Phase 2**
 - Agentic workflows: research / regulatory-change / incident-analysis agents,

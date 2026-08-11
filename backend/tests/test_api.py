@@ -129,7 +129,7 @@ def test_dashboard_summary_and_brief(client):
     r = client.get("/api/dashboard/summary", params={"window_days": 30})
     body = r.json()
     for key in ("high_impact", "total_changes", "new_incidents",
-                "new_opportunities", "watch_changed"):
+                "sources_ok", "sources_total", "watch_changed"):
         assert key in body
     brief = client.get("/api/brief", params={"window_days": 30}).json()
     assert "high_impact_items" in brief and "counts" in brief and "watchlist" in brief
@@ -227,7 +227,5 @@ def test_jurisdictions_reference(client):
 
 
 def test_demo_data_flagged(client):
-    r = client.get("/api/items", params={"category": "training"})
-    assert all(i["is_demo"] for i in r.json()["items"])
     r = client.get("/api/items", params={"include_demo": False})
     assert all(not i["is_demo"] for i in r.json()["items"])

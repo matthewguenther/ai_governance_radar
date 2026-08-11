@@ -4,7 +4,7 @@
 
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Activity, AlertTriangle, GraduationCap, ShieldAlert } from "lucide-react";
+import { Activity, AlertTriangle, Rss, ShieldAlert } from "lucide-react";
 
 import { ItemDetailDrawer } from "../components/items/ItemDetailDrawer";
 import { ItemRow } from "../components/items/ItemRow";
@@ -143,14 +143,19 @@ export default function Dashboard() {
           sub="reported harms & actions"
         />
         <KpiCard
-          label="Opportunities"
-          value={summary.data?.new_opportunities ?? "—"}
+          label="Sources reporting"
+          value={
+            summary.data ? `${summary.data.sources_ok}/${summary.data.sources_total}` : "—"
+          }
           loading={summary.isPending}
-          to="/events"
-          tone="positive"
-          icon={GraduationCap}
-          spark={spark}
-          sub="events & training"
+          to="/settings"
+          tone={
+            summary.data && summary.data.sources_ok < summary.data.sources_total
+              ? "high"
+              : "positive"
+          }
+          icon={Rss}
+          sub="collection health"
         />
       </div>
 

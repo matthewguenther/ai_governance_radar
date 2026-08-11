@@ -100,33 +100,6 @@
     require_ai_relevance: true
 
 # --- Events & professional development --------------------------------------
-- name: Relve — AI & tech events
-  url: https://relvehq.com/events?view=list
-  type: sitemap_events
-  tier: 3
-  category: event
-  polling_interval_minutes: 1440
-  enabled: true
-  attribution: "Event metadata via Relve (relvehq.com); links resolve to the listing."
-  config:
-    sitemap: https://relvehq.com/events-sitemap.xml
-    path_contains: /events/
-    max_pages: 60
-    # Catalogue spans general tech; keep only AI/security-relevant gatherings.
-    require_ai_relevance: true
-
-- name: NIST Events
-  url: https://www.nist.gov/news-events/events
-  feed_url: https://www.nist.gov/news-events/events/rss.xml
-  type: rss
-  tier: 1
-  jurisdiction: US
-  category: event
-  polling_interval_minutes: 1440
-  enabled: true
-  config:
-    require_ai_relevance: true
-
 - name: arXiv — LLM/AI security research
   url: https://arxiv.org/list/cs.CR/recent
   feed_url: https://export.arxiv.org/api/query?search_query=cat:cs.CR+AND+%28all:%22prompt+injection%22+OR+all:%22LLM+security%22+OR+all:%22jailbreak%22%29&sortBy=submittedDate&sortOrder=descending&max_results=20

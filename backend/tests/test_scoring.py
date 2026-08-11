@@ -72,16 +72,17 @@ def test_classifier_precision_on_common_false_positives():
     from app.services.classify import classify
 
     # "Federal Register" must not read as an event; "AI training" is model
-    # training, not professional development.
+    # training, not professional development. Both categories were retired
+    # entirely (DEC-027), so nothing should ever be labelled with them.
     cats, _ = classify("Notice published in the Federal Register on AI systems", None, None, None)
     assert "event" not in cats
     cats, _ = classify("Meta halts AI training after investigation", None, None, None)
     assert "training" not in cats
+    cats, _ = classify("IAPP webinar: operationalizing AI governance", None, None, None)
+    assert "event" not in cats
     # Defensive research must not read as an incident.
     cats, _ = classify("Breach-Aware Prompt Injection Shielding for LLMs", None, None, None)
     assert "incident" not in cats
-    # Genuine events and incidents still classify.
-    cats, _ = classify("IAPP webinar: operationalizing AI governance", None, None, None)
-    assert "event" in cats
+    # Genuine incidents still classify.
     cats, _ = classify("Court revives lawsuit claiming AI software fueled harm", None, None, None)
     assert "incident" in cats

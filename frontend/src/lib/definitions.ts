@@ -72,7 +72,5 @@ export const CATEGORY_DEFS: Record<string, string> = {
   security: "AI security research, vulnerabilities, and attack techniques.",
   research: "Academic and institutional research output.",
   news: "General AI governance-relevant reporting.",
-  training: "Certifications, courses, and professional credentials.",
-  event: "Conferences, webinars, workshops, and symposia.",
   ranking: "Indices and benchmarks comparing jurisdictions or systems.",
 };

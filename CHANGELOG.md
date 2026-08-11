@@ -41,6 +41,16 @@ All notable changes to this project. Dates are UTC.
 
 ## [Unreleased]
 
+### 2026-08-11 — Events & Training removed (DEC-027)
+Owner decision after evaluating a working implementation: no source publishes AI
+governance events or certifications with enough relevance to justify the feature.
+Removed the page and route, the `sitemap_events` source type and schema.org Event
+parser, the Relve and NIST Events sources (28 collected items deleted), the
+`event`/`training` classification rules, and their filter options. The dashboard's
+fourth KPI is now **Sources reporting** (healthy/enabled, links to Settings) — always
+backed by real data, and it tells you whether the other three numbers can be trusted.
+Category values stay in the data model in case a dedicated source ever appears.
+
 ### 2026-08-11 — Data quality, recency, and classifier honesty
 **Sources (6 added, all live-verified).** AI Incident Database RSS (real, current
 incident reports — the primary fix for years-old incident data), European Commission

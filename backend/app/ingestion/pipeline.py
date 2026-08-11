@@ -33,8 +33,6 @@ def ingest_source(db: Session, source: Source) -> SourceRun:
             _ingest_json_api(db, source, run)
         elif source.source_type == "page_watch":
             _ingest_page_watch(db, source, run)
-        elif source.source_type == "sitemap_events":
-            _ingest_sitemap_events(db, source, run)
         else:
             raise FetchError(f"Unknown source_type: {source.source_type}")
         run.status = "success"
@@ -105,45 +103,6 @@ def _ingest_page_watch(db: Session, source: Source, run: SourceRun) -> None:
     )
     if item is not None:
         run.items_new += 1
-
-
-def _ingest_sitemap_events(db: Session, source: Source, run: SourceRun) -> None:
-    """Collect schema.org Events from pages listed in a sitemap.
-
-    Event pages are heavy, so only URLs not already stored are fetched, and each
-    run is capped — later runs catch up. This keeps a 58-page catalogue to one
-    burst on first ingest and near-zero traffic thereafter.
-    """
-    config = source.config or {}
-    sitemap_url = config.get("sitemap") or source.feed_url or source.url
-    max_pages = int(config.get("max_pages", 40))
-    path_contains = config.get("path_contains", "/events/")
-
-    result = safe_fetch(sitemap_url)
-    run.http_status = result.status_code
-    urls = parsers.parse_sitemap_urls(result.text, path_contains)
-    run.items_found = len(urls)
-    if not urls:
-        return
-
-    known = set(
-        db.execute(
-            select(Item.canonical_url).where(Item.source_id == source.id)
-        ).scalars().all()
-    )
-    todo = [u for u in urls if parsers.canonicalize_url(u) not in known][:max_pages]
-
-    normalized: list[parsers.NormalizedItem] = []
-    for url in todo:
-        try:
-            page = safe_fetch(url)
-        except (FetchError, FetchBlockedError) as e:
-            logger.warning("Event page fetch failed (%s): %s", url, e)
-            continue
-        event = parsers.parse_event_jsonld(page.text, url)
-        if event is not None:
-            normalized.append(event)
-    _persist_items(db, source, run, normalized)
 
 
 class NormalizedToItem:
@@ -246,7 +205,7 @@ class NormalizedToItem:
 
 def _persist_items(db: Session, source: Source, run: SourceRun,
                    normalized: list[parsers.NormalizedItem]) -> None:
-    run.items_found = run.items_found or len(normalized)
+    run.items_found = len(normalized)
     builder = NormalizedToItem(db, source)
     for n in normalized:
         before = n.content_hash

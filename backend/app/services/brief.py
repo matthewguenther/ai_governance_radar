@@ -5,7 +5,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import String, cast, func, select
 from sqlalchemy.orm import Session
 
-from app.models import AppState, Incident, Item, Standard, Watch
+from app.models import AppState, Incident, Item, Source, Standard, Watch
 from app.services.changes import all_watch_statuses
 from app.services.scoring import HIGH_IMPACT_THRESHOLD
 
@@ -76,14 +76,22 @@ def dashboard_summary(db: Session, window_days: int | None = None) -> dict:
     incidents = db.execute(
         select(func.count(Incident.id)).where(Incident.reported_at > since)
     ).scalar_one() + _cat_count(db, since, "incident")
-    opportunities = _cat_count(db, since, "training") + _cat_count(db, since, "event")
+
+    # Source health: the numbers above are only trustworthy if collection is
+    # working, so the dashboard surfaces it alongside them.
+    enabled_sources = db.execute(
+        select(Source).where(Source.enabled.is_(True))
+    ).scalars().all()
+    sources_total = len(enabled_sources)
+    sources_ok = sum(1 for s in enabled_sources if s.last_error is None)
     statuses = all_watch_statuses(db)
     return {
         "since": since.isoformat(),
         "high_impact": high_impact,
         "total_changes": total,
         "new_incidents": incidents,
-        "new_opportunities": opportunities,
+        "sources_ok": sources_ok,
+        "sources_total": sources_total,
         "watch_count": len(statuses),
         "watch_changed": sum(1 for s in statuses if s.status != "NO CHANGE"),
     }

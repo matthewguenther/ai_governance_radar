@@ -5,7 +5,6 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
   BookOpenCheck,
-  CalendarDays,
   ChevronsLeft,
   ChevronsRight,
   Landmark,
@@ -30,7 +29,6 @@ const NAV = [
   { to: "/standards", label: "Standards", icon: BookOpenCheck },
   { to: "/incidents", label: "Incidents & Risks", icon: AlertTriangle },
   { to: "/items", label: "Intelligence Feed", icon: Newspaper },
-  { to: "/events", label: "Events & Training", icon: CalendarDays },
   { to: "/watchlist", label: "Watchlist", icon: Radar },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
