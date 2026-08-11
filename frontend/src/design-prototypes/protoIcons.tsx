@@ -4,6 +4,8 @@
  * category icons, and a small donut chart. Direction A "aliveness" layer.
  */
 
+import "flag-icons/css/flag-icons.min.css";
+import USStateFlags from "us-state-flags/USStateFlags";
 import {
   AlertTriangle, Bot, Database, EyeOff, FlaskConical, Globe, KeyRound,
   MessageSquareX, Scale, ScanFace, ShieldAlert, TerminalSquare,
@@ -51,73 +53,57 @@ export function RadarLogo({ size = 34, accent = "#628BFF", sweep = "#3FBF77" }: 
   );
 }
 
-/* ---------------- jurisdiction flag chips (CSS gradients) ---------------- */
+/* ---------------- jurisdiction flag chips (real flag assets) ----------------
+ * Countries: `flag-icons` SVG set (CSS classes, bundled locally by Vite).
+ * US states: `us-state-flags` React SVG components (offline, no fetches).
+ * Fallback (intergov bodies without flags in the sets): neutral globe chip.
+ */
 
-const FLAG_CSS: Record<string, React.CSSProperties> = {
-  US: {
-    backgroundImage:
-      "linear-gradient(#3C3B6E, #3C3B6E), repeating-linear-gradient(180deg, #B22234 0 2.5px, #FFFFFF 2.5px 5px)",
-    backgroundSize: "55% 45%, 100% 100%", backgroundRepeat: "no-repeat", backgroundPosition: "left top",
-  },
-  "US-CO": {
-    backgroundImage:
-      "radial-gradient(circle at 48% 50%, #C8102E 0 26%, transparent 27%), linear-gradient(180deg, #1E4C9A 0 32%, #FFFFFF 32% 68%, #1E4C9A 68%)",
-  },
-  "US-CA": {
-    backgroundImage:
-      "radial-gradient(circle at 30% 32%, #B71234 0 16%, transparent 17%), linear-gradient(180deg, #FFFFFF 0 78%, #B71234 78%)",
-  },
-  "US-NY": { backgroundImage: "linear-gradient(90deg, #0057B8 0 34%, #FFFFFF 34% 66%, #FF7F00 66%)" },
-  "US-NYC": { backgroundImage: "linear-gradient(90deg, #0057B8 0 34%, #FFFFFF 34% 66%, #FF7F00 66%)" },
-  "US-TX": {
-    backgroundImage:
-      "linear-gradient(90deg, #002868 0 36%, transparent 36%), linear-gradient(180deg, #FFFFFF 0 50%, #BF0A30 50%)",
-  },
-  "US-UT": { backgroundImage: "radial-gradient(circle at 50% 50%, #F4B41A 0 24%, transparent 25%), linear-gradient(#0A2E6B, #0A2E6B)" },
-  "US-CT": { backgroundImage: "radial-gradient(circle at 50% 52%, #FFFFFF 0 22%, transparent 23%), linear-gradient(#0B2F6B, #0B2F6B)" },
-  "US-IL": { backgroundImage: "radial-gradient(circle at 50% 50%, #E68A2E 0 24%, transparent 25%), linear-gradient(#F4F1E9, #F4F1E9)" },
-  "US-WA": { backgroundImage: "radial-gradient(circle at 50% 50%, #E8D26F 0 24%, transparent 25%), linear-gradient(#1D6B3C, #1D6B3C)" },
-  EU: { backgroundImage: "radial-gradient(circle at 50% 50%, #FFCC00 0 20%, transparent 21%), linear-gradient(#003399, #003399)" },
-  GB: {
-    backgroundImage:
-      "linear-gradient(0deg, transparent 41%, #C8102E 41% 59%, transparent 59%), linear-gradient(90deg, transparent 41%, #C8102E 41% 59%, transparent 59%), linear-gradient(0deg, transparent 33%, #FFFFFF 33% 67%, transparent 67%), linear-gradient(90deg, transparent 33%, #FFFFFF 33% 67%, transparent 67%), linear-gradient(#012169, #012169)",
-  },
-  SG: { backgroundImage: "linear-gradient(180deg, #EF3340 0 50%, #FFFFFF 50%)" },
-  JP: { backgroundImage: "radial-gradient(circle at 50% 50%, #BC002D 0 26%, transparent 27%), linear-gradient(#FFFFFF, #FFFFFF)" },
-  CN: { backgroundImage: "radial-gradient(circle at 30% 30%, #FFDE00 0 15%, transparent 16%), linear-gradient(#DE2910, #DE2910)" },
-  KR: { backgroundImage: "radial-gradient(circle at 50% 42%, #CD2E3A 0 20%, transparent 21%), radial-gradient(circle at 50% 58%, #0047A0 0 20%, transparent 21%), linear-gradient(#FFFFFF, #FFFFFF)" },
-  CA: { backgroundImage: "linear-gradient(90deg, #D80621 0 30%, #FFFFFF 30% 70%, #D80621 70%)" },
-  AU: { backgroundImage: "radial-gradient(circle at 65% 60%, #FFFFFF 0 12%, transparent 13%), radial-gradient(circle at 30% 30%, #FFFFFF 0 14%, transparent 15%), linear-gradient(#00247D, #00247D)" },
-  IN: { backgroundImage: "linear-gradient(180deg, #FF9933 0 34%, #FFFFFF 34% 66%, #138808 66%)" },
-  AE: { backgroundImage: "linear-gradient(90deg, #EF3340 0 28%, transparent 28%), linear-gradient(180deg, #009639 0 34%, #FFFFFF 34% 66%, #141414 66%)" },
-  BR: { backgroundImage: "radial-gradient(circle at 50% 50%, #FFDF00 0 26%, transparent 27%), linear-gradient(#009B3A, #009B3A)" },
-  FR: { backgroundImage: "linear-gradient(90deg, #002395 0 34%, #FFFFFF 34% 66%, #ED2939 66%)" },
-  DE: { backgroundImage: "linear-gradient(180deg, #141414 0 34%, #DD0000 34% 66%, #FFCE00 66%)" },
-  IT: { backgroundImage: "linear-gradient(90deg, #009246 0 34%, #FFFFFF 34% 66%, #CE2B37 66%)" },
-  ES: { backgroundImage: "linear-gradient(180deg, #AA151B 0 28%, #F1BF00 28% 72%, #AA151B 72%)" },
-  NL: { backgroundImage: "linear-gradient(180deg, #AE1C28 0 34%, #FFFFFF 34% 66%, #21468B 66%)" },
-  IE: { backgroundImage: "linear-gradient(90deg, #169B62 0 34%, #FFFFFF 34% 66%, #FF883E 66%)" },
+const COUNTRY_CODES: Record<string, string> = {
+  US: "us", GB: "gb", SG: "sg", JP: "jp", CN: "cn", KR: "kr", CA: "ca", AU: "au",
+  IN: "in", AE: "ae", BR: "br", FR: "fr", DE: "de", IT: "it", ES: "es", NL: "nl",
+  IE: "ie", EU: "eu", "INTL-UN": "un",
 };
 
+const chipFrame = (size: number): React.CSSProperties => ({
+  width: size, height: size, borderRadius: "50%", flexShrink: 0,
+  border: "1px solid rgba(255,255,255,.22)", boxShadow: "0 1px 4px rgba(0,0,0,.4)",
+  overflow: "hidden", display: "inline-grid", placeItems: "center",
+  background: "#252E3C",
+});
+
 export function FlagChip({ code, size = 20, title }: { code: string; size?: number; title?: string }) {
-  const css = FLAG_CSS[code];
-  if (!css) {
+  // US states/cities: US-CO → CO (NYC uses New York's flag)
+  if (code.startsWith("US-")) {
+    const abbr = code === "US-NYC" ? "NY" : code.slice(3);
     return (
-      <span title={title ?? code} style={{
-        width: size, height: size, borderRadius: "50%", flexShrink: 0,
-        background: "#252E3C", border: "1px solid #3A4656",
-        display: "inline-grid", placeItems: "center",
-      }}>
-        <Globe size={size * 0.6} color="#8FA0B5" strokeWidth={1.6} />
+      <span title={title ?? code} style={chipFrame(size)}>
+        {/* flag is 3:2; render taller than the circle so it center-crops to fill */}
+        <USStateFlags
+          state={abbr} showFlag flagSize="sm" flagAlt={`${abbr} state flag`}
+          style={{ width: size * 1.6, height: size * 1.1, pointerEvents: "none" }}
+        />
       </span>
     );
   }
+
+  const cc = COUNTRY_CODES[code];
+  if (cc) {
+    return (
+      <span title={title ?? code} style={chipFrame(size)}>
+        <span
+          className={`fi fi-${cc} fis`}
+          style={{ width: size, height: size, backgroundSize: "cover", display: "block" }}
+        />
+      </span>
+    );
+  }
+
+  // Intergovernmental bodies (OECD, UNESCO, G7, GLOBAL, …): neutral globe
   return (
-    <span title={title ?? code} style={{
-      width: size, height: size, borderRadius: "50%", flexShrink: 0,
-      border: "1px solid rgba(255,255,255,.22)", boxShadow: "0 1px 4px rgba(0,0,0,.4)",
-      display: "inline-block", ...css,
-    }} />
+    <span title={title ?? code} style={chipFrame(size)}>
+      <Globe size={size * 0.6} color="#8FA0B5" strokeWidth={1.6} />
+    </span>
   );
 }
 
