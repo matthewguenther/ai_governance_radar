@@ -1,0 +1,117 @@
+# Source registry (§85 shape). Loaded idempotently by `radar seed`.
+# tier: 1 primary authoritative · 2 high-quality secondary · 3 professional reporting · 4 community
+# Feed URLs verified by live fetch during T-007 (see SOURCE_CATALOG.md for status).
+
+- name: NIST News
+  url: https://www.nist.gov/news-events/news
+  feed_url: https://www.nist.gov/news-events/news/rss.xml
+  type: rss
+  tier: 1
+  jurisdiction: US
+  category: standard
+  polling_interval_minutes: 360
+  enabled: true
+
+# CISA blocks non-browser clients (HTTP 403 as of 2026-08-11 verification). We use an
+# honest User-Agent and do not spoof browsers. Disabled by default; enable if CISA
+# allows programmatic access again.
+- name: CISA Advisories
+  url: https://www.cisa.gov/news-events/cybersecurity-advisories
+  feed_url: https://www.cisa.gov/cybersecurity-advisories/all.xml
+  type: rss
+  tier: 1
+  jurisdiction: US
+  category: security
+  polling_interval_minutes: 360
+  enabled: false
+
+- name: Federal Register — Artificial Intelligence
+  url: https://www.federalregister.gov/
+  feed_url: https://www.federalregister.gov/api/v1/documents.json?conditions%5Bterm%5D=artificial+intelligence&per_page=20&order=newest
+  type: json_api
+  tier: 1
+  jurisdiction: US
+  category: regulation
+  polling_interval_minutes: 720
+  enabled: true
+  config:
+    mapping:
+      items_path: results
+      url: html_url
+      title: title
+      summary: abstract
+      published: publication_date
+  attribution: "Federal Register data is in the public domain."
+
+- name: GOV.UK — AI announcements
+  url: https://www.gov.uk/search/news-and-communications?keywords=artificial%20intelligence
+  feed_url: https://www.gov.uk/search/news-and-communications.atom?keywords=artificial%20intelligence&order=updated-newest
+  type: atom
+  tier: 1
+  jurisdiction: GB
+  category: regulation
+  polling_interval_minutes: 720
+  enabled: true
+  attribution: "Contains public sector information licensed under the Open Government Licence v3.0."
+
+- name: arXiv — LLM/AI security research
+  url: https://arxiv.org/list/cs.CR/recent
+  feed_url: https://export.arxiv.org/api/query?search_query=cat:cs.CR+AND+%28all:%22prompt+injection%22+OR+all:%22LLM+security%22+OR+all:%22jailbreak%22%29&sortBy=submittedDate&sortOrder=descending&max_results=20
+  type: atom
+  tier: 2
+  category: research
+  polling_interval_minutes: 720
+  enabled: true
+  attribution: "Thank you to arXiv for use of its open access interoperability."
+
+# ISO blocks non-browser clients (HTTP 403 as of 2026-08-11 verification). Disabled by
+# default for the same honest-UA reason as CISA.
+- name: ISO/IEC 42001 page
+  url: https://www.iso.org/standard/81230.html
+  type: page_watch
+  tier: 1
+  category: standard
+  polling_interval_minutes: 1440
+  enabled: false
+
+- name: MITRE ATLAS site
+  url: https://atlas.mitre.org/
+  type: page_watch
+  tier: 1
+  category: security
+  polling_interval_minutes: 1440
+  enabled: true
+
+- name: OWASP GenAI Security Project
+  url: https://genai.owasp.org/
+  type: page_watch
+  tier: 1
+  category: security
+  polling_interval_minutes: 1440
+  enabled: true
+
+- name: EU AI Act (EUR-Lex) page
+  url: https://eur-lex.europa.eu/eli/reg/2024/1689/oj
+  type: page_watch
+  tier: 1
+  jurisdiction: EU
+  category: regulation
+  polling_interval_minutes: 1440
+  enabled: true
+
+- name: NIST AI RMF page
+  url: https://www.nist.gov/itl/ai-risk-management-framework
+  type: page_watch
+  tier: 1
+  jurisdiction: US
+  category: standard
+  polling_interval_minutes: 1440
+  enabled: true
+
+- name: Stanford HAI News
+  url: https://hai.stanford.edu/news
+  type: page_watch
+  tier: 2
+  category: research
+  polling_interval_minutes: 1440
+  enabled: true

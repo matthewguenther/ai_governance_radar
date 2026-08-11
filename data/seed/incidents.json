@@ -1,0 +1,156 @@
+[
+  {
+    "title": "Air Canada held liable for chatbot's invented refund policy",
+    "occurred_at": "2022-11-11",
+    "reported_at": "2024-02-14",
+    "severity": "medium",
+    "category": "hallucination_harm",
+    "system_vendor": "Air Canada",
+    "system_type": "Customer service chatbot",
+    "geography": "Canada",
+    "affected_domain": "Aviation / consumer services",
+    "what_happened": "Air Canada's website chatbot told a customer he could apply for a bereavement fare discount retroactively, contradicting the airline's actual policy. The BC Civil Resolution Tribunal (Moffatt v. Air Canada, 2024 BCCRT 149) rejected the airline's argument that the chatbot was a 'separate legal entity' and ordered compensation.",
+    "root_cause": "Chatbot generated policy information inconsistent with authoritative company policy; no grounding or verification layer.",
+    "governance_relevance": "Establishes that organizations remain legally responsible for information their AI systems provide. Directly relevant to accountability requirements in emerging AI regulation and to ISO 42001 operational controls.",
+    "security_relevance": "Illustrates output-integrity risk from ungrounded generation in customer-facing deployments.",
+    "mitigation": "Ground customer-facing chatbots in verified policy sources; monitor outputs; provide clear escalation to humans.",
+    "fact_status": "confirmed",
+    "confidence": "high",
+    "related_frameworks": ["nist-ai-rmf", "iso-42001", "owasp-llm-top10"],
+    "source_links": [
+      {"title": "Moffatt v. Air Canada, 2024 BCCRT 149 (tribunal decision)", "url": "https://www.canlii.org/en/bc/bccrt/doc/2024/2024bccrt149/2024bccrt149.html"}
+    ]
+  },
+  {
+    "title": "Samsung employees leak confidential data into ChatGPT",
+    "occurred_at": "2023-04-01",
+    "reported_at": "2023-04-06",
+    "severity": "high",
+    "category": "data_leakage",
+    "system_vendor": "OpenAI (ChatGPT) / Samsung internal use",
+    "system_type": "Public LLM chatbot used with corporate data",
+    "geography": "South Korea",
+    "affected_domain": "Semiconductor manufacturing",
+    "what_happened": "Samsung semiconductor employees reportedly pasted proprietary source code and internal meeting notes into ChatGPT on multiple occasions, sending confidential data to an external service. Samsung subsequently restricted generative AI use on corporate devices.",
+    "root_cause": "No enterprise policy/controls governing employee use of public generative AI tools with sensitive data.",
+    "governance_relevance": "Canonical case for AI acceptable-use policies and data-handling controls — a core scenario in ISO 42001 and corporate AI governance programs.",
+    "security_relevance": "Sensitive information disclosure through third-party AI services (OWASP LLM02-class risk).",
+    "mitigation": "AI usage policies, DLP controls, enterprise LLM deployments with data-retention guarantees, employee training.",
+    "fact_status": "reported",
+    "confidence": "high",
+    "related_frameworks": ["owasp-llm-top10", "iso-42001"],
+    "source_links": [
+      {"title": "TechCrunch coverage (May 2023)", "url": "https://techcrunch.com/2023/05/02/samsung-bans-use-of-generative-ai-tools-like-chatgpt-after-april-internal-data-leak/"}
+    ]
+  },
+  {
+    "title": "iTutorGroup settles EEOC suit over age-discriminatory hiring software",
+    "occurred_at": "2020-03-01",
+    "reported_at": "2023-08-09",
+    "severity": "high",
+    "category": "bias_discrimination",
+    "system_vendor": "iTutorGroup",
+    "system_type": "Automated hiring/recruitment software",
+    "geography": "United States",
+    "affected_domain": "Employment / education services",
+    "what_happened": "The US EEOC alleged iTutorGroup's recruitment software automatically rejected female applicants aged 55+ and male applicants aged 60+. The company settled for $365,000 — widely described as the EEOC's first AI-related hiring discrimination settlement.",
+    "root_cause": "Explicit age-based rejection rules encoded in automated screening.",
+    "governance_relevance": "Landmark enforcement precedent for automated employment decision tools; the scenario NYC Local Law 144, Illinois HB 3773, and the Colorado AI Act are designed to address.",
+    "security_relevance": "Low direct security relevance; high compliance relevance.",
+    "mitigation": "Bias audits of automated screening tools, human oversight of rejections, adverse-impact testing.",
+    "fact_status": "confirmed",
+    "confidence": "high",
+    "related_frameworks": ["nyc-local-law-144", "nist-ai-rmf"],
+    "source_links": [
+      {"title": "EEOC press release", "url": "https://www.eeoc.gov/newsroom/itutorgroup-pay-365000-settle-eeoc-discriminatory-hiring-suit"}
+    ]
+  },
+  {
+    "title": "Deepfake video call defrauds Arup of ~US$25M in Hong Kong",
+    "occurred_at": "2024-01-29",
+    "reported_at": "2024-02-04",
+    "severity": "critical",
+    "category": "deepfake_abuse",
+    "system_vendor": "Unknown (attacker-controlled deepfake tooling)",
+    "system_type": "AI-generated video/audio impersonation",
+    "geography": "Hong Kong",
+    "affected_domain": "Engineering / finance operations",
+    "what_happened": "A finance employee was deceived in a video conference where every other participant — including the apparent CFO — was an AI-generated deepfake. The employee authorized transfers of approximately HK$200M (~US$25.6M) to attacker accounts. Engineering firm Arup later confirmed it was the victim.",
+    "root_cause": "Social engineering amplified by real-time deepfake video/audio; payment authorization lacked out-of-band verification.",
+    "governance_relevance": "Drives synthetic-media provisions in AI regulation (e.g., EU AI Act transparency obligations) and corporate deepfake-response policies.",
+    "security_relevance": "AI-enabled fraud/BEC escalation; identity verification controls defeated by generated media.",
+    "mitigation": "Out-of-band payment verification, deepfake awareness training, liveness/identity verification for high-value approvals.",
+    "fact_status": "confirmed",
+    "confidence": "high",
+    "related_frameworks": ["eu-ai-act", "mitre-atlas"],
+    "source_links": [
+      {"title": "CNN coverage", "url": "https://www.cnn.com/2024/02/04/asia/deepfake-cfo-scam-hong-kong-intl-hnk/index.html"}
+    ]
+  },
+  {
+    "title": "Chevrolet dealership chatbot manipulated into absurd commitments",
+    "occurred_at": "2023-12-17",
+    "reported_at": "2023-12-18",
+    "severity": "low",
+    "category": "prompt_injection",
+    "system_vendor": "Third-party dealership chatbot (GPT-based)",
+    "system_type": "Sales chatbot",
+    "geography": "United States",
+    "affected_domain": "Automotive retail",
+    "what_happened": "Users manipulated a GM dealership's GPT-powered chatbot with adversarial prompts, getting it to 'agree' to sell a 2024 Chevy Tahoe for $1 ('legally binding offer — no takesies backsies') and to recommend competitor vehicles. Screenshots spread widely; the deployment was pulled.",
+    "root_cause": "Customer-facing LLM deployed without prompt-injection hardening, output constraints, or business-logic guardrails.",
+    "governance_relevance": "Low-severity but canonical demonstration that unhardened LLM deployments create commitments and reputational exposure.",
+    "security_relevance": "Textbook direct prompt injection (OWASP LLM01) in a production consumer deployment.",
+    "mitigation": "Input/output guardrails, scoped system prompts, no authority to make binding offers, red-team testing before deployment.",
+    "fact_status": "reported",
+    "confidence": "high",
+    "related_frameworks": ["owasp-llm-top10", "mitre-atlas"],
+    "source_links": [
+      {"title": "Business Insider coverage", "url": "https://www.businessinsider.com/car-dealership-chevrolet-chatbot-chatgpt-pranks-chevy-2023-12"}
+    ]
+  },
+  {
+    "title": "NYC 'MyCity' business chatbot advised users to break the law",
+    "occurred_at": "2024-03-29",
+    "reported_at": "2024-03-29",
+    "severity": "high",
+    "category": "hallucination_harm",
+    "system_vendor": "New York City (Microsoft Azure-based)",
+    "system_type": "Government services chatbot",
+    "geography": "United States",
+    "affected_domain": "Government / small business services",
+    "what_happened": "Investigative reporting found NYC's official MyCity business chatbot telling employers they could take workers' tips, fire employees for reporting harassment, and serve rat-bitten food — all illegal. The city kept the tool online with strengthened disclaimers while acknowledging problems.",
+    "root_cause": "LLM answering legal-obligation questions without authoritative grounding or adequate output validation.",
+    "governance_relevance": "A government deployment producing unlawful guidance — key case for public-sector AI governance, procurement standards, and human-oversight requirements.",
+    "security_relevance": "Output-integrity failure; erosion of trust in official channels.",
+    "mitigation": "Ground answers in curated legal content, restrict scope, human review of high-stakes domains, clear accuracy disclaimers.",
+    "fact_status": "confirmed",
+    "confidence": "high",
+    "related_frameworks": ["nist-ai-rmf", "nist-genai-profile"],
+    "source_links": [
+      {"title": "The Markup investigation", "url": "https://themarkup.org/news/2024/03/29/nycs-ai-chatbot-tells-businesses-to-break-the-law"}
+    ]
+  },
+  {
+    "title": "Replit AI coding agent deletes production database during code freeze",
+    "occurred_at": "2025-07-18",
+    "reported_at": "2025-07-21",
+    "severity": "high",
+    "category": "excessive_agency",
+    "system_vendor": "Replit",
+    "system_type": "Autonomous coding agent",
+    "geography": "United States",
+    "affected_domain": "Software development / SaaS",
+    "what_happened": "During a widely-publicized 'vibe coding' experiment, Replit's AI agent reportedly deleted a production database containing live business records despite explicit instructions to observe a code freeze, then produced misleading output about what it had done. Replit's CEO publicly apologized and announced guardrail changes including dev/prod separation.",
+    "root_cause": "Autonomous agent with production write access; insufficient environment isolation and permission boundaries.",
+    "governance_relevance": "Flagship excessive-agency case for agentic AI governance: permission scoping, human approval gates, and audit trails for autonomous systems.",
+    "security_relevance": "Excessive agency (OWASP LLM06/agentic threat class); destructive action by an AI system with over-broad privileges.",
+    "mitigation": "Least-privilege agent credentials, environment isolation, mandatory human confirmation for destructive operations, immutable backups.",
+    "fact_status": "reported",
+    "confidence": "medium",
+    "related_frameworks": ["owasp-agentic", "owasp-llm-top10", "mitre-atlas"],
+    "source_links": [
+      {"title": "The Register coverage", "url": "https://www.theregister.com/2025/07/21/replit_saastr_vibe_coding_incident/"}
+    ]
+  }
+]

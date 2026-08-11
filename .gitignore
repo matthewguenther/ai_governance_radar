@@ -1,0 +1,52 @@
+# Original long-form spec (pre-existing owner choice — see DECISIONS.md DEC-011)
+AI_Governance_Radar_Product_Design_Development_Spec.md
+
+# Secrets / local config
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+
+# Database (local SQLite lives outside git)
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+data/*.db
+
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+
+# Logs / temp
+*.log
+tmp/
+.cache/

@@ -1,0 +1,168 @@
+[
+  {
+    "url": "https://example.invalid/demo/co-ag-rulemaking",
+    "title": "DEMO: Colorado AG opens rulemaking on AI Act implementation guidance",
+    "excerpt": "Demonstration item. The Colorado Attorney General's office announced a rulemaking process for implementation guidance ahead of the Colorado AI Act's effective date, covering documentation duties for developers and impact-assessment expectations for deployers.",
+    "category": "regulation",
+    "jurisdiction": "US-CO",
+    "change_type": "status_change",
+    "days_ago": 1,
+    "tier": 1,
+    "confidence": "high",
+    "entities": ["colorado-ai-act"]
+  },
+  {
+    "url": "https://example.invalid/demo/nist-rmf-companion",
+    "title": "DEMO: NIST AI RMF companion guidance draft opens for public comment",
+    "excerpt": "Demonstration item. NIST released a draft companion resource for the AI Risk Management Framework addressing agentic AI risk profiles, opening a 60-day public comment period.",
+    "category": "standard",
+    "jurisdiction": "US",
+    "change_type": "update",
+    "days_ago": 1,
+    "tier": 1,
+    "confidence": "high",
+    "entities": ["nist-ai-rmf"]
+  },
+  {
+    "url": "https://example.invalid/demo/owasp-agentic-update",
+    "title": "DEMO: OWASP Agentic AI Security guidance adds tool-abuse mitigations",
+    "excerpt": "Demonstration item. The OWASP GenAI Security Project published an update to its agentic AI threat guidance with new mitigations for tool abuse, memory poisoning, and multi-agent trust boundaries.",
+    "category": "security",
+    "change_type": "update",
+    "days_ago": 2,
+    "tier": 1,
+    "confidence": "high",
+    "entities": ["owasp-agentic"]
+  },
+  {
+    "url": "https://example.invalid/demo/eu-gpai-enforcement",
+    "title": "DEMO: EU AI Office issues first GPAI compliance requests",
+    "excerpt": "Demonstration item. The European AI Office issued its first formal information requests to general-purpose AI model providers under the EU AI Act's GPAI obligations.",
+    "category": "regulation",
+    "jurisdiction": "EU",
+    "change_type": "new",
+    "days_ago": 2,
+    "tier": 1,
+    "confidence": "medium",
+    "fact_status": "reported",
+    "entities": ["eu-ai-act"]
+  },
+  {
+    "url": "https://example.invalid/demo/prompt-injection-agents",
+    "title": "DEMO: Research: indirect prompt injection succeeds against production agent frameworks",
+    "excerpt": "Demonstration item. Security researchers demonstrated indirect prompt injection attacks achieving tool invocation in several widely used agent frameworks, recommending strict output-tool separation.",
+    "category": "security",
+    "change_type": "new",
+    "days_ago": 3,
+    "tier": 2,
+    "confidence": "medium",
+    "entities": ["owasp-llm-top10", "mitre-atlas"]
+  },
+  {
+    "url": "https://example.invalid/demo/iso-42001-cert-growth",
+    "title": "DEMO: ISO/IEC 42001 certifications double year-over-year",
+    "excerpt": "Demonstration item. Accreditation bodies report rapid growth in ISO/IEC 42001 AI management system certifications, with financial services and healthcare leading adoption.",
+    "category": "standard",
+    "change_type": "new",
+    "days_ago": 4,
+    "tier": 3,
+    "confidence": "medium",
+    "entities": ["iso-42001"]
+  },
+  {
+    "url": "https://example.invalid/demo/uk-consultation",
+    "title": "DEMO: UK opens consultation on frontier AI reporting requirements",
+    "excerpt": "Demonstration item. The UK government opened a consultation on mandatory reporting requirements for frontier AI developers, signalling movement from voluntary commitments.",
+    "category": "regulation",
+    "jurisdiction": "GB",
+    "change_type": "new",
+    "days_ago": 5,
+    "tier": 1,
+    "confidence": "high"
+  },
+  {
+    "url": "https://example.invalid/demo/deepfake-fraud-wave",
+    "title": "DEMO: Financial regulators warn of AI voice-cloning fraud wave",
+    "excerpt": "Demonstration item. Multiple financial regulators issued coordinated warnings about AI voice-cloning fraud targeting payment authorization workflows.",
+    "category": "incident",
+    "change_type": "new",
+    "days_ago": 5,
+    "tier": 1,
+    "confidence": "high"
+  },
+  {
+    "url": "https://example.invalid/demo/singapore-genai-toolkit",
+    "title": "DEMO: Singapore IMDA releases GenAI evaluation toolkit update",
+    "excerpt": "Demonstration item. IMDA and the AI Verify Foundation released an updated evaluation toolkit aligned with the Model AI Governance Framework for Generative AI.",
+    "category": "standard",
+    "jurisdiction": "SG",
+    "change_type": "update",
+    "days_ago": 6,
+    "tier": 1,
+    "confidence": "high",
+    "entities": ["sg-model-ai-governance"]
+  },
+  {
+    "url": "https://example.invalid/demo/iapp-webinar",
+    "title": "DEMO: IAPP webinar: operationalizing AI governance under state laws",
+    "excerpt": "Demonstration item. Upcoming webinar covering compliance operations for the Colorado AI Act, Texas TRAIGA, and Illinois HB 3773. Registration open.",
+    "category": "event",
+    "change_type": "new",
+    "days_ago": 3,
+    "tier": 3,
+    "confidence": "high"
+  },
+  {
+    "url": "https://example.invalid/demo/aigp-cert-update",
+    "title": "DEMO: AI governance certification adds agentic AI module",
+    "excerpt": "Demonstration item. A major AI governance professional certification announced new curriculum modules on agentic AI oversight and incident response.",
+    "category": "training",
+    "change_type": "update",
+    "days_ago": 6,
+    "tier": 3,
+    "confidence": "medium"
+  },
+  {
+    "url": "https://example.invalid/demo/stanford-index",
+    "title": "DEMO: Stanford AI Index reports surge in state-level AI legislation",
+    "excerpt": "Demonstration item. The latest AI Index tracks a significant year-over-year increase in enacted state AI legislation and global regulatory activity.",
+    "category": "research",
+    "change_type": "new",
+    "days_ago": 7,
+    "tier": 2,
+    "confidence": "high"
+  },
+  {
+    "url": "https://example.invalid/demo/mitre-atlas-techniques",
+    "title": "DEMO: MITRE ATLAS adds techniques for RAG poisoning and model extraction",
+    "excerpt": "Demonstration item. MITRE ATLAS published new adversary techniques covering retrieval-augmented generation poisoning and black-box model extraction observed in the wild.",
+    "category": "security",
+    "change_type": "update",
+    "days_ago": 8,
+    "tier": 1,
+    "confidence": "high",
+    "entities": ["mitre-atlas"]
+  },
+  {
+    "url": "https://example.invalid/demo/healthcare-ai-incident",
+    "title": "DEMO: Hospital reports diagnostic AI misclassification affecting triage",
+    "excerpt": "Demonstration item. A hospital system disclosed that a diagnostic support model misclassified cases over a two-week window, triggering internal review and regulator notification.",
+    "category": "incident",
+    "change_type": "new",
+    "days_ago": 9,
+    "tier": 2,
+    "confidence": "low",
+    "fact_status": "under_investigation"
+  },
+  {
+    "url": "https://example.invalid/demo/g7-code-update",
+    "title": "DEMO: G7 updates international code of conduct for advanced AI",
+    "excerpt": "Demonstration item. G7 members endorsed an updated code of conduct for organizations developing advanced AI systems, adding incident-reporting expectations.",
+    "category": "regulation",
+    "jurisdiction": "INTL-G7",
+    "change_type": "update",
+    "days_ago": 10,
+    "tier": 1,
+    "confidence": "high"
+  }
+]

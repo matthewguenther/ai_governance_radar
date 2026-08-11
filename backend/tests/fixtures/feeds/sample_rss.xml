@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Test Governance Feed</title>
+    <link>https://example.org/news</link>
+    <item>
+      <title>Colorado AI Act enforcement guidance released</title>
+      <link>https://example.org/news/colorado-guidance?utm_source=rss&amp;utm_medium=feed</link>
+      <description>&lt;p&gt;The state released &lt;b&gt;new guidance&lt;/b&gt; on the AI Act.&lt;/p&gt;&lt;script&gt;alert('xss')&lt;/script&gt;</description>
+      <pubDate>Mon, 04 Aug 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>NIST publishes framework security update</title>
+      <link>https://example.org/news/nist-update</link>
+      <description>A standards update covering AI risk management framework changes.</description>
+      <pubDate>Tue, 05 Aug 2026 09:30:00 GMT</pubDate>
+    </item>
+    <item>
+      <title></title>
+      <link>https://example.org/news/empty-title</link>
+      <description>Item with empty title should be skipped.</description>
+    </item>
+  </channel>
+</rss>
