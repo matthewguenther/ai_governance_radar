@@ -1,4 +1,5 @@
-/** Intelligence Feed: filterable, paginated item browser (KPI click-through target). */
+/** All Sources: filterable, paginated browser over everything collected. The
+ * searchable firehose — curated knowledge lives on Regulatory/Standards/Incidents. */
 
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
