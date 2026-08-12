@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from app.api.helpers import watched_entity_slugs
 from app.core.db import get_db
 from app.models import Entity, Regulation, Standard
 from app.schemas.models import EntityOut
@@ -12,18 +11,12 @@ from app.schemas.models import EntityOut
 router = APIRouter(tags=["entities"])
 
 
-def _entity_out(entity: Entity, watched: set[str]) -> EntityOut:
-    out = EntityOut.model_validate(entity)
-    out.watched = entity.slug in watched
-    return out
-
-
 @router.get("/entities", response_model=list[EntityOut])
 def list_entities(
     entity_type: str | None = None,
     jurisdiction: str | None = None,
     db: Session = Depends(get_db),
-) -> list[EntityOut]:
+) -> list[Entity]:
     q = select(Entity).options(
         joinedload(Entity.regulation), joinedload(Entity.standard), joinedload(Entity.events)
     )
@@ -31,13 +24,11 @@ def list_entities(
         q = q.where(Entity.entity_type == entity_type)
     if jurisdiction:
         q = q.where(Entity.jurisdiction_code == jurisdiction)
-    rows = db.execute(q.order_by(Entity.name)).unique().scalars().all()
-    watched = watched_entity_slugs(db)
-    return [_entity_out(e, watched) for e in rows]
+    return list(db.execute(q.order_by(Entity.name)).unique().scalars().all())
 
 
 @router.get("/entities/{slug}", response_model=EntityOut)
-def get_entity(slug: str, db: Session = Depends(get_db)) -> EntityOut:
+def get_entity(slug: str, db: Session = Depends(get_db)) -> Entity:
     entity = db.execute(
         select(Entity).where(Entity.slug == slug).options(
             joinedload(Entity.regulation), joinedload(Entity.standard), joinedload(Entity.events)
@@ -45,7 +36,7 @@ def get_entity(slug: str, db: Session = Depends(get_db)) -> EntityOut:
     ).unique().scalar_one_or_none()
     if entity is None:
         raise HTTPException(status_code=404, detail="Entity not found")
-    return _entity_out(entity, watched_entity_slugs(db))
+    return entity
 
 
 @router.get("/regulations", response_model=list[EntityOut])
@@ -55,7 +46,7 @@ def list_regulations(
     status: str | None = None,
     government_level: str | None = None,
     db: Session = Depends(get_db),
-) -> list[EntityOut]:
+) -> list[Entity]:
     q = (
         select(Entity)
         .join(Regulation, Regulation.entity_id == Entity.id)
@@ -72,9 +63,7 @@ def list_regulations(
         q = q.where(Regulation.status == status)
     if government_level:
         q = q.where(Regulation.government_level == government_level)
-    rows = db.execute(q.order_by(Entity.name)).unique().scalars().all()
-    watched = watched_entity_slugs(db)
-    return [_entity_out(e, watched) for e in rows]
+    return list(db.execute(q.order_by(Entity.name)).unique().scalars().all())
 
 
 @router.get("/standards", response_model=list[EntityOut])
@@ -82,7 +71,7 @@ def list_standards(
     publisher: str | None = None,
     status: str | None = None,
     db: Session = Depends(get_db),
-) -> list[EntityOut]:
+) -> list[Entity]:
     q = (
         select(Entity)
         .join(Standard, Standard.entity_id == Entity.id)
@@ -92,6 +81,4 @@ def list_standards(
         q = q.where(Standard.publisher == publisher)
     if status:
         q = q.where(Standard.status == status)
-    rows = db.execute(q.order_by(Entity.name)).unique().scalars().all()
-    watched = watched_entity_slugs(db)
-    return [_entity_out(e, watched) for e in rows]
+    return list(db.execute(q.order_by(Entity.name)).unique().scalars().all())

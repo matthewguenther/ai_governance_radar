@@ -305,14 +305,14 @@ export default function Dashboard() {
       {/* Live feed strip */}
       <div className="mt-3.5">
         <Card
-          title="Intelligence Feed"
+          title="Latest from All Sources"
           tick={T.positive}
           headRight={
             <span className="inline-flex items-center gap-2 font-mono text-[10.5px] text-tx-secondary">
               <span aria-hidden className="live-dot" />
               LIVE
               <Link to="/items" className="text-accent hover:underline">
-                Open feed
+                View all
               </Link>
             </span>
           }

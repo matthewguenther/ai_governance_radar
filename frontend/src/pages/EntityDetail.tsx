@@ -9,7 +9,6 @@ import { ItemRow } from "../components/items/ItemRow";
 import { ConfidenceBadge, DemoBadge, StatusPill } from "../components/ui/Badge";
 import { FlagChip } from "../components/ui/FlagChip";
 import { CardSkeleton, EmptyState, ErrorState } from "../components/ui/States";
-import { WatchButton } from "../components/ui/WatchButton";
 import { useEntity, useItems } from "../lib/api";
 import { shortDate, titleCase, verificationAgeDays } from "../lib/format";
 import type { ItemOut } from "../lib/types";
@@ -64,7 +63,6 @@ export default function EntityDetail() {
           <h1 className="mt-2 text-xl font-semibold text-tx-primary">{e.name}</h1>
           {e.description && <p className="mt-1 max-w-2xl text-sm text-tx-secondary">{e.description}</p>}
         </div>
-        <WatchButton targetType="entity" targetKey={e.slug} />
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-3">

@@ -207,7 +207,8 @@ function ImportExport() {
     <section className="card p-4">
       <h2 className="meta-label mb-3 !text-tx-secondary">Import / Export</h2>
       <p className="text-xs text-tx-muted">
-        Move your watchlist and source configuration between instances — no lock-in.
+        Move your source configuration between instances, or export collected items —
+        no lock-in.
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         <button

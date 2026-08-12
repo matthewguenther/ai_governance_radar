@@ -21,7 +21,6 @@ from app.api import (
     search,
     sources,
     transfer,
-    watchlist,
 )
 from app.core.config import settings
 from app.core.db import SessionLocal, init_db
@@ -87,7 +86,7 @@ app.add_middleware(
 
 api = FastAPI(title="AI Governance Radar API", version=__version__)
 for router in (meta.router, sources.router, items.router, entities.router,
-               incidents.router, watchlist.router, search.router, dashboard.router,
+               incidents.router, search.router, dashboard.router,
                ingest.router, transfer.router):
     api.include_router(router)
 app.mount("/api", api)

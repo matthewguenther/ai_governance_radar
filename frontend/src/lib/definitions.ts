@@ -16,9 +16,9 @@ export function impactBand(score: number) {
 
 export const IMPACT_EXPLAINER =
   "Impact (0–100) is computed from fixed rules, not opinion: subject category, " +
-  "source authority tier, change type (new vs. status change), recency, and whether " +
-  "it matches your watchlist. Items with no AI-specific relevance are capped at 25. " +
-  "Open any item to see the exact points breakdown.";
+  "source authority tier, change type (new vs. status change), and recency. Items " +
+  "with no AI-specific relevance are capped at 25. Open any item to see the exact " +
+  "points breakdown.";
 
 export const CONFIDENCE_DEFS: Record<string, string> = {
   high:

@@ -119,7 +119,7 @@ Regulation views surface `last_verified_at` age so staleness is visible, not hid
 watched, cluster-collapsed; sort; offset pagination) · `GET /api/items/{id}` ·
 `GET /api/entities[/{id}]` (incl. timeline) · `GET /api/regulations` ·
 `GET /api/standards` · `GET /api/incidents[/{id}]` · `GET /api/search?q=` (grouped) ·
-`GET/POST/DELETE /api/watchlist` · `GET /api/brief` · `GET /api/dashboard/summary` ·
+`GET /api/dashboard/summary` · `GET /api/dashboard/map` ·
 `POST /api/ingest` · export/import (JSON/CSV). Documented at `/docs`.
 
 ## 6. Security architecture (§86)

@@ -142,6 +142,9 @@ migrations after users have data is far costlier than starting clean.
 **Consequences:** Slightly slower first schema task; every model change needs a revision.
 
 ## DEC-013 — Morning Brief is V1, deterministic-only
+> **Superseded by DEC-028** — the brief proved to be a subset of the dashboard and
+> was removed.
+
 **Decision:** Ship `/brief` in V1: pure aggregation over stored data (high-impact since
 last visit, per-domain counts, watchlist deltas) per §25's layout. No LLM narrative.
 **Alternatives:** defer entirely to Phase 3 (where §66 lists "morning brief").
@@ -304,6 +307,33 @@ seconds after showing what happened. "What changed since I last looked?" (§25/�
 means since the user *reviewed* the information, not since the process started.
 **Consequences:** Brief always has a day of content; watchlist statuses persist until
 actually viewed; frequent visitors see stable, truthful deltas.
+
+## DEC-028 — Morning Brief and Watchlist removed; feed renamed "All Sources"
+**Decision:** Remove the Morning Brief page and `/api/brief`, remove the Watchlist
+entirely (page, `watches` table, `changes.py`, `/api/watchlist*`, watch buttons,
+sidebar badge, export payload, and the `watched_match` scoring factor), drop the
+"since your last visit" machinery (`/api/visit`, `last_visit_at`), and rename
+"Intelligence Feed" to **All Sources**. `brief.py` becomes `summary.py`, retaining
+only `dashboard_summary`. Supersedes DEC-013 (Morning Brief in V1) and the watchlist
+half of DEC-008.
+**Alternatives:** keep both; keep the brief as a dashboard time-window control; keep
+the watchlist for future scale.
+**Rationale:** Owner assessment, and the data agreed. The brief showed 3 high-impact
+items and category counts — a strict subset of the dashboard, which shows the same
+items plus map, regulatory pulse, standards, incidents, and source health. The
+dashboard *is* the brief in this product. The watchlist is a scale feature: with 22
+tracked entities and 10 regulations the entire corpus fits on one screen, so watching
+a subset adds ceremony without reducing anything. "Intelligence Feed" also misnamed
+the firehose as though it were the important surface, when its job is search and
+filter across everything collected.
+**Consequences:** Six surfaces remain, each with a distinct job: Home (what matters
+now), Regulatory Radar and Standards (curated reference), Incidents & Risks (curated
+analysis plus the incident stream), All Sources (everything, filterable), Settings.
+Deviates from spec §25 (Morning Brief) and §5.5/§51 (Watchlists) — recorded in
+PRODUCT_SPEC.md. When coverage grows enough to need filtering, the better successor
+is §80's personal intelligence layer (my jurisdictions / my frameworks), which
+filters the whole product, rather than manual starring. Both features are recoverable
+from git history.
 
 ## DEC-027 — Events & Training removed from the product (supersedes DEC-026)
 **Decision:** Remove the Events & Training page, the "New Opportunities" KPI, the

@@ -227,19 +227,6 @@ class ItemEntity(Base):
     entity: Mapped[Entity] = relationship(back_populates="item_links")
 
 
-class Watch(Base):
-    """Single-user watchlist (DEC-008). Polymorphic target."""
-
-    __tablename__ = "watches"
-    __table_args__ = (UniqueConstraint("target_type", "target_key", name="uq_watch_target"),)
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    target_type: Mapped[str] = mapped_column(String(15))  # entity|source|jurisdiction|category
-    target_key: Mapped[str] = mapped_column(String(200))
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
-    last_viewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-
-
 class AppState(Base):
     """Single-user preferences / app metadata (DEC-018)."""
 

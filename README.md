@@ -13,7 +13,7 @@ background required to run it.
 - 🔌 **No AI subscription needed** — works completely without ChatGPT, Claude, or any
   AI service. (Optional AI features may come later, and even then you'll choose your
   own provider — including free local models.)
-- 🔒 **Private by default** — your watchlist and data never leave your computer
+- 🔒 **Private by default** — your data never leaves your computer
 - 📌 **Facts you can trust** — every regulation shows its official source, key dates,
   a confidence level, and the date a human last verified it. The software never
   invents legal facts.
@@ -79,14 +79,13 @@ file is just a plain-text settings file — open it in any text editor.)
 | | Feature | What it gives you |
 |---|---|---|
 | 📊 | **Dashboard** | High-impact counts, top developments, a world map of regulatory activity, incidents, and standards — all on one screen |
-| ☀️ | **Morning Brief** | "What happened since I last looked?" — generated from your data, no AI involved |
 | 🏛️ | **Regulatory Radar** | Tracked AI laws (Colorado AI Act, EU AI Act, and more) with status, key dates, penalties, and links to official sources |
 | 📐 | **Standards** | NIST AI RMF, ISO/IEC 42001, OWASP, MITRE ATLAS — versions, status, and what changed |
 | ⚠️ | **Incidents** | Real, documented AI incidents written up like intelligence reports, with severity and "confirmed vs. alleged" labels |
-| 👁️ | **Watchlist** | Watch any regulation, standard, topic, or place — the app tells you what changed since your last visit |
+| 📰 | **All Sources** | Everything collected, newest first — filter by category, impact, confidence, or source |
 | 🔍 | **Search** | One search box across everything, results grouped by type |
 | 🩺 | **Source health** | See exactly which feeds are working, when they last succeeded, and why one failed |
-| 📤 | **Import/export** | Take your watchlist and settings with you — no lock-in, ever |
+| 📤 | **Import/export** | Take your settings with you, or export collected items as CSV — no lock-in, ever |
 
 Starter/demo entries are always clearly labeled **DEMO DATA** so you never mistake
 them for live intelligence.

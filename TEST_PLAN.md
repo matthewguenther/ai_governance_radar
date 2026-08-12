@@ -8,10 +8,10 @@ this file defines the layers, tooling, and release gates.
 ## 1. Layers
 
 ### Backend unit tests (pytest)
-- Scoring (table-driven cases; bounds properties), dedupe/clustering (curated
-  positive/negative pairs), change detection (re-ingest scenarios), brief/dashboard
-  aggregation (fixture DB with hand-computed expected counts), watchlist delta
-  derivation, SafeFetcher security behavior.
+- Scoring (table-driven cases; bounds properties; AI-relevance cap), classifier
+  precision (known false positives), dedupe/clustering (curated positive/negative
+  pairs), change detection (re-ingest scenarios), dashboard summary aggregation,
+  SafeFetcher security behavior.
 - Location: `backend/tests/unit/`.
 
 ### Backend API tests (pytest + TestClient)
@@ -40,8 +40,8 @@ this file defines the layers, tooling, and release gates.
   labels spot-check. Checklist = DESIGN_SYSTEM.md §8.
 
 ### Visual QA (manual, agent-driven browser loop)
-- Screenshot Dashboard, Regulatory Radar, Standards, Incident detail, Watchlist,
-  Settings, Morning Brief at 1280 / 768 / 375 px. Compare against DESIGN_SYSTEM.md.
+- Screenshot Dashboard, Regulatory Radar, Standards, Incident detail, All Sources,
+  Settings at 1280 / 768 / 375 px. Compare against DESIGN_SYSTEM.md.
   Archive in `docs/qa/YYYY-MM-DD/`. Repeat until no obvious defects (§70, §73).
 
 ### End-to-end (deferred until after T-030)

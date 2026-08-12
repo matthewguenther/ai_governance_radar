@@ -133,7 +133,6 @@ export interface EntityOut {
   regulation: RegulationOut | null;
   standard: StandardOut | null;
   events: EntityEventOut[];
-  watched: boolean;
 }
 
 export interface IncidentOut {
@@ -159,25 +158,6 @@ export interface IncidentOut {
   is_demo: boolean;
 }
 
-export interface WatchOut {
-  id: number;
-  target_type: string;
-  target_key: string;
-  created_at: string;
-  last_viewed_at: string | null;
-}
-
-export interface WatchStatusOut {
-  watch_id: number;
-  target_type: string;
-  target_key: string;
-  display_name: string;
-  status: string;
-  new_items: number;
-  events: number;
-  last_change_at: string | null;
-}
-
 export interface DashboardSummary {
   since: string;
   high_impact: number;
@@ -185,25 +165,6 @@ export interface DashboardSummary {
   new_incidents: number;
   sources_ok: number;
   sources_total: number;
-  watch_count: number;
-  watch_changed: number;
-}
-
-export interface BriefOut {
-  generated_at: string;
-  since: string;
-  high_impact_items: ItemOut[];
-  counts: Record<string, number>;
-  standards_updated: number;
-  incidents: {
-    id: number;
-    title: string;
-    severity: string;
-    category: string;
-    reported_at: string;
-    fact_status: string;
-  }[];
-  watchlist: { watched: number; changed: number; entries: WatchStatusOut[] };
 }
 
 export interface MapRow {

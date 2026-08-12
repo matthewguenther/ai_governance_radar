@@ -41,6 +41,22 @@ All notable changes to this project. Dates are UTC.
 
 ## [Unreleased]
 
+### 2026-08-11 — Morning Brief and Watchlist removed; feed renamed (DEC-028)
+The brief was a strict subset of the dashboard (same high-impact items, fewer
+modules), and the watchlist is a scale feature that adds nothing while the whole
+corpus fits on one screen. Removed both, along with the "since your last visit"
+machinery they shared (`/api/visit`, `last_visit_at`, mark-viewed), the `watches`
+table, `changes.py`, watch buttons across Regulatory/Standards/Entity views, the
+sidebar badge, watch entries in import/export, and the `watched_match` scoring
+factor. `services/brief.py` became `services/summary.py` with only the dashboard
+aggregation left.
+
+"Intelligence Feed" renamed **All Sources** (nav, page, and dashboard strip) — it is
+the searchable firehose, not the headline surface, and the name now says so.
+
+Six surfaces remain, each with a distinct job: Home, Regulatory Radar, Standards,
+Incidents & Risks, All Sources, Settings.
+
 ### 2026-08-11 — Events & Training removed (DEC-027)
 Owner decision after evaluating a working implementation: no source publishes AI
 governance events or certifications with enough relevance to justify the feature.

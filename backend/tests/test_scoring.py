@@ -22,7 +22,7 @@ def test_low_impact_old_tier4_news():
 
 def test_score_bounded_0_100():
     r = score_item(["regulation", "standard", "incident", "security"], 1,
-                   "status_change", NOW, watched_match=True, now=NOW)
+                   "status_change", NOW, now=NOW)
     assert 0 <= r.score <= 100
 
 

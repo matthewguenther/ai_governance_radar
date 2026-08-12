@@ -12,7 +12,6 @@ from app.models.tables import (
     Source,
     SourceRun,
     Standard,
-    Watch,
 )
 
 __all__ = [
@@ -27,5 +26,4 @@ __all__ = [
     "Source",
     "SourceRun",
     "Standard",
-    "Watch",
 ]

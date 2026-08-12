@@ -62,8 +62,8 @@ export default function Items() {
   return (
     <>
       <PageHeader
-        title="Intelligence Feed"
-        detail="All collected items, newest first — duplicates collapsed to their primary source."
+        title="All Sources"
+        detail="Everything collected from every monitored source, newest first — duplicates collapsed to their primary source."
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">

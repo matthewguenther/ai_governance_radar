@@ -46,7 +46,6 @@ def score_item(
     reliability_tier: int,
     change_type: str | None,
     published_at: datetime | None,
-    watched_match: bool = False,
     now: datetime | None = None,
     ai_relevant: bool = True,
 ) -> ScoreResult:
@@ -77,9 +76,6 @@ def score_item(
             factors.append({"factor": "Published within 48 hours", "points": 15})
         elif age_days <= 7:
             factors.append({"factor": "Published within 7 days", "points": 8})
-
-    if watched_match:
-        factors.append({"factor": "Matches your watchlist", "points": 15})
 
     score = min(sum(f["points"] for f in factors), 100)
 

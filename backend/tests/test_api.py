@@ -94,22 +94,11 @@ def test_entity_timeline(client):
     assert client.get("/api/entities/nope").status_code == 404
 
 
-def test_watchlist_roundtrip(client):
-    r = client.post("/api/watchlist",
-                    json={"target_type": "entity", "target_key": "eu-ai-act"})
-    assert r.status_code == 201
-    watch_id = r.json()["id"]
-    # duplicate returns same watch
-    r2 = client.post("/api/watchlist",
-                     json={"target_type": "entity", "target_key": "eu-ai-act"})
-    assert r2.json()["id"] == watch_id
-    # unknown entity 404
-    assert client.post("/api/watchlist",
-                       json={"target_type": "entity", "target_key": "ghost"}).status_code == 404
-    statuses = client.get("/api/watchlist/status").json()
-    assert any(s["target_key"] == "eu-ai-act" for s in statuses)
-    assert client.delete(f"/api/watchlist/{watch_id}").status_code == 204
-    assert client.delete(f"/api/watchlist/{watch_id}").status_code == 404
+def test_removed_features_are_gone(client):
+    """Watchlist and Morning Brief were removed (DEC-028); their routes must not
+    linger as half-working surfaces."""
+    for path in ("/api/watchlist", "/api/watchlist/status", "/api/brief", "/api/visit"):
+        assert client.get(path).status_code == 404, path
 
 
 def test_search_grouped(client):
@@ -125,14 +114,15 @@ def test_search_grouped(client):
     assert client.get("/api/search", params={"q": '"malicious" OR 1'}).status_code == 200
 
 
-def test_dashboard_summary_and_brief(client):
-    r = client.get("/api/dashboard/summary", params={"window_days": 30})
-    body = r.json()
+def test_dashboard_summary(client):
+    body = client.get("/api/dashboard/summary", params={"window_days": 30}).json()
     for key in ("high_impact", "total_changes", "new_incidents",
-                "sources_ok", "sources_total", "watch_changed"):
+                "sources_ok", "sources_total", "since"):
         assert key in body
-    brief = client.get("/api/brief", params={"window_days": 30}).json()
-    assert "high_impact_items" in brief and "counts" in brief and "watchlist" in brief
+    # Source health must reflect enabled sources only.
+    enabled = [s for s in client.get("/api/sources").json() if s["enabled"]]
+    assert body["sources_total"] == len(enabled)
+    assert body["sources_ok"] <= body["sources_total"]
 
 
 def test_map_data(client):
@@ -211,11 +201,10 @@ def test_source_with_items_cannot_be_deleted(client):
 
 
 def test_export_import_roundtrip(client):
-    client.post("/api/watchlist", json={"target_type": "entity", "target_key": "nist-ai-rmf"})
     export = client.get("/api/export").json()
-    assert any(w["target_key"] == "nist-ai-rmf" for w in export["watches"])
+    assert export["sources"], "source configuration should be exportable"
     r = client.post("/api/import", json=export)
-    assert r.status_code == 200
+    assert r.status_code == 200 and r.json()["sources_updated"] >= 1
     csv_r = client.get("/api/export/items.csv")
     assert csv_r.status_code == 200 and csv_r.text.startswith("id,title")
 

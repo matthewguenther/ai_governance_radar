@@ -75,6 +75,7 @@ navigation by a hairline rule.
 | `OrgAvatar` | Monogram tiles with recognizable colors: NIST blue, ISO red, OWASP slate, MITRE violet, arXiv crimson, GOV.UK blue, etc. Regex-matched from names; hashed neutral fallback. |
 | `IncidentIcon` | Category glyph (terminal = prompt injection, bot = agency, scale = bias, face-scan = deepfake…) in a severity-tinted tile. |
 | `ItemAvatar` | Row logic: known org entity → OrgAvatar · else jurisdiction → FlagChip · else source monogram. |
+| `InfoTip` | Hover/focus tooltip used to define every classifier (impact, confidence, severity, fact status, tier) from `lib/definitions.ts`. |
 
 ## 6. Status & data indicators
 

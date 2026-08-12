@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type {
-  BriefOut,
   DashboardSummary,
   EntityOut,
   IncidentOut,
@@ -14,8 +13,6 @@ import type {
   SearchOut,
   SourceOut,
   SourceRunOut,
-  WatchOut,
-  WatchStatusOut,
 } from "./types";
 
 export class ApiError extends Error {
@@ -128,12 +125,6 @@ export const useDashboardSummary = (windowDays?: number) =>
     queryFn: () => request<DashboardSummary>(`/dashboard/summary${qs({ window_days: windowDays })}`),
   });
 
-export const useBrief = (windowDays?: number) =>
-  useQuery({
-    queryKey: ["brief", windowDays],
-    queryFn: () => request<BriefOut>(`/brief${qs({ window_days: windowDays })}`),
-  });
-
 export const useMapData = () =>
   useQuery({ queryKey: ["map"], queryFn: () => request<MapRow[]>("/dashboard/map") });
 
@@ -154,15 +145,6 @@ export const useSourceRuns = (sourceId: number | null) =>
     enabled: sourceId !== null,
   });
 
-export const useWatchlist = () =>
-  useQuery({ queryKey: ["watchlist"], queryFn: () => request<WatchOut[]>("/watchlist") });
-
-export const useWatchStatuses = () =>
-  useQuery({
-    queryKey: ["watch-status"],
-    queryFn: () => request<WatchStatusOut[]>("/watchlist/status"),
-  });
-
 export const useJurisdictions = () =>
   useQuery({
     queryKey: ["jurisdictions"],
@@ -171,25 +153,6 @@ export const useJurisdictions = () =>
   });
 
 /* ---------------- mutations ---------------- */
-
-const WATCH_KEYS = [["watchlist"], ["watch-status"], ["regulations"], ["standards"], ["entity"], ["summary"], ["brief"]];
-
-export function useAddWatch() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (body: { target_type: string; target_key: string }) =>
-      request<WatchOut>("/watchlist", { method: "POST", body: JSON.stringify(body) }),
-    onSuccess: () => WATCH_KEYS.forEach((k) => qc.invalidateQueries({ queryKey: k })),
-  });
-}
-
-export function useRemoveWatch() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (watchId: number) => request<void>(`/watchlist/${watchId}`, { method: "DELETE" }),
-    onSuccess: () => WATCH_KEYS.forEach((k) => qc.invalidateQueries({ queryKey: k })),
-  });
-}
 
 export function usePatchSource() {
   const qc = useQueryClient();
@@ -217,11 +180,6 @@ export function useIngestNow() {
     onSuccess: () => qc.invalidateQueries(),
   });
 }
-
-export const markVisit = () => request<{ ok: boolean }>("/visit", { method: "POST" });
-
-export const markWatchlistViewed = () =>
-  request<{ ok: boolean }>("/watchlist/mark-viewed", { method: "POST" });
 
 export const exportConfig = () => request<Record<string, unknown>>("/export");
 

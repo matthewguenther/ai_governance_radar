@@ -77,15 +77,17 @@ in the data model (as item categories) but get no dedicated pages in V1. See DEC
   severity badge, source, category, one-line explanation, relative time, link), global
   regulatory heat map (clearly labeled metric; color ≠ good/bad), incidents card, standards
   watch card.
-- **Watchlist** (§5.5, §51) — Watch button on every entity; watchlist page shows per-item
-  change status; dashboard counts changes since last visit.
+- ~~**Watchlist** (§5.5, §51)~~ — **removed** (DEC-028): a scale feature that adds nothing
+  while the whole tracked corpus fits on one screen. Personalization should return as
+  §80's profile layer (my jurisdictions / my frameworks), not manual starring.
 - **Search** (§28) — across title/source/entity/regulation/jurisdiction/framework/incident/
   tags/extracted text; results grouped by type (REGULATIONS / STANDARDS / INCIDENTS / NEWS /
   EVENTS / TRAINING).
 - **Item detail / intelligence view** (§26) — What happened / Why it matters / Who is
   affected / What changed / Related / Evidence (source links) / Confidence.
-- **Morning Brief** (§25) — "what happened since I last looked?", **generated
-  deterministically from stored data**; LLM narrative is optional and out of V1 scope.
+- ~~**Morning Brief** (§25)~~ — **removed** (DEC-028): it was a strict subset of the
+  dashboard, which answers the same question with more context. The dashboard is the
+  brief in this product.
 - **Settings** (§50) — sources (enable/disable, polling, manual creation), dashboard prefs,
   AI provider config placeholder (disabled in V1), notifications marked future.
 - **Ingestion pipeline** (§29, §60–62) — source registry → fetch (API > RSS/Atom >
@@ -129,12 +131,11 @@ in the data model (as item categories) but get no dedicated pages in V1. See DEC
   an admin panel, RSS reader, or marketing site. Details in [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md).
 - Semantic colors only (red=critical, orange=medium/high, yellow=watch, green=healthy,
   blue=informational, purple=emerging/research); **color is never the only indicator**.
-- Fixed left sidebar (collapsible to icons): Home, Morning Brief, Regulatory Radar, Global
-  Landscape, Standards & Frameworks, Incidents & Risks, News & Insights, Rankings,
-  Training, Events, Watchlist, Reports, Settings. (Deferred domains appear as disabled/
-  future entries or are hidden until built.)
-- Desktop primary; tablet functional; mobile uses bottom nav with priority: Morning Brief,
-  Top Developments, Watchlist, Regulatory changes, Incidents, Standards.
+- Fixed left sidebar (collapsible to icons), six surfaces after DEC-027/028: Home,
+  Regulatory Radar, Standards, Incidents & Risks, All Sources, Settings. Each has a
+  distinct job; nothing is a lesser copy of another.
+- Desktop primary; tablet functional; mobile uses bottom nav with priority: Home,
+  Regulatory Radar, Incidents, All Sources.
 - Accessibility baseline: keyboard nav, visible focus, contrast, semantic HTML, screen-reader
   labels, reduced motion. Restrained animation. Meaningful empty states; visible, actionable
   error states — **never silently discard ingestion failures**.
@@ -168,7 +169,7 @@ source, date, jurisdiction, confidence, and verification timestamp. When uncerta
 
 **Functional:** app starts locally with documented commands; DB initializes automatically;
 seed data loads; several real authoritative sources are ingestible; items searchable;
-regulations filterable; standards filterable; incidents viewable; watchlist works; source
+regulations filterable; standards filterable; incidents viewable; source
 attribution works; API works; configuration works.
 
 **UI:** dark intelligence-dashboard aesthetic; desktop layout matches design direction;

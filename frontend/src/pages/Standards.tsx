@@ -7,7 +7,6 @@ import { PageHeader } from "../components/layout/PageHeader";
 import { DemoBadge, StatusPill } from "../components/ui/Badge";
 import { OrgAvatar } from "../components/ui/OrgAvatar";
 import { CardSkeleton, EmptyState, ErrorState } from "../components/ui/States";
-import { WatchButton } from "../components/ui/WatchButton";
 import { useStandards } from "../lib/api";
 import { shortDate, titleCase } from "../lib/format";
 
@@ -127,7 +126,6 @@ export default function Standards() {
                   >
                     Official source <ExternalLink aria-hidden className="h-3 w-3" />
                   </a>
-                  <WatchButton targetType="entity" targetKey={e.slug} compact />
                 </div>
               </article>
             );

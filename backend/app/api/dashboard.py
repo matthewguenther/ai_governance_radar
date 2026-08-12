@@ -1,4 +1,4 @@
-"""Dashboard summary, morning brief, visit tracking, map data (T-011, T-020, T-021)."""
+"""Dashboard summary and map data (T-011, T-021)."""
 
 from datetime import UTC, datetime, timedelta
 
@@ -6,12 +6,10 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.api.helpers import item_to_out
 from app.core.db import get_db
 from app.core.jurisdictions import JURISDICTIONS, country_of
 from app.models import Entity, Item
-from app.schemas.models import WatchStatusOut
-from app.services import brief as brief_service
+from app.services import summary as summary_service
 
 router = APIRouter(tags=["dashboard"])
 
@@ -21,48 +19,7 @@ def dashboard_summary(
     window_days: int | None = Query(default=None, ge=1, le=365),
     db: Session = Depends(get_db),
 ) -> dict:
-    return brief_service.dashboard_summary(db, window_days)
-
-
-@router.post("/visit")
-def mark_visit(db: Session = Depends(get_db)) -> dict:
-    brief_service.mark_visit(db)
-    return {"ok": True}
-
-
-@router.post("/watchlist/mark-viewed")
-def mark_watchlist_viewed(db: Session = Depends(get_db)) -> dict:
-    brief_service.mark_watches_viewed(db)
-    return {"ok": True}
-
-
-@router.get("/brief")
-def morning_brief(
-    window_days: int | None = Query(default=None, ge=1, le=365),
-    db: Session = Depends(get_db),
-) -> dict:
-    data = brief_service.morning_brief(db, window_days)
-    return {
-        "generated_at": data["generated_at"],
-        "since": data["since"],
-        "high_impact_items": [
-            item_to_out(db, i).model_dump() for i in data["high_impact_items"]
-        ],
-        "counts": data["counts"],
-        "standards_updated": data["standards_updated"],
-        "incidents": [
-            {"id": i.id, "title": i.title, "severity": i.severity,
-             "category": i.category, "reported_at": i.reported_at.isoformat(),
-             "fact_status": i.fact_status}
-            for i in data["incidents"]
-        ],
-        "watchlist": {
-            "watched": data["watchlist"]["watched"],
-            "changed": data["watchlist"]["changed"],
-            "entries": [WatchStatusOut(**vars(s)).model_dump()
-                        for s in data["watchlist"]["entries"]],
-        },
-    }
+    return summary_service.dashboard_summary(db, window_days)
 
 
 @router.get("/dashboard/map")

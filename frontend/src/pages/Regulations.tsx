@@ -7,7 +7,6 @@ import { PageHeader } from "../components/layout/PageHeader";
 import { ConfidenceBadge, DemoBadge, StatusPill } from "../components/ui/Badge";
 import { FlagChip } from "../components/ui/FlagChip";
 import { CardSkeleton, EmptyState, ErrorState } from "../components/ui/States";
-import { WatchButton } from "../components/ui/WatchButton";
 import { useJurisdictions, useRegulations } from "../lib/api";
 import { shortDate, titleCase } from "../lib/format";
 
@@ -119,7 +118,7 @@ export default function Regulations() {
           <table className="w-full min-w-[760px] border-collapse text-sm">
             <thead>
               <tr className="border-b border-bd-strong bg-bg-raised/60 text-left">
-                {["Jurisdiction", "Regulation", "Status", "Last update", "Effective", "Confidence", ""].map((h) => (
+                {["Jurisdiction", "Regulation", "Status", "Last update", "Effective", "Confidence"].map((h) => (
                   <th key={h} className="meta-label whitespace-nowrap px-3 py-2.5 font-medium">{h}</th>
                 ))}
               </tr>
@@ -147,9 +146,6 @@ export default function Regulations() {
                     <td className="whitespace-nowrap px-3 py-2.5 text-xs text-tx-secondary">{shortDate(lastUpdate)}</td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-xs text-tx-secondary">{shortDate(r.effective_at)}</td>
                     <td className="whitespace-nowrap px-3 py-2.5"><ConfidenceBadge confidence={r.confidence} /></td>
-                    <td className="whitespace-nowrap px-3 py-2.5 text-right">
-                      <WatchButton targetType="entity" targetKey={e.slug} compact />
-                    </td>
                   </tr>
                 );
               })}

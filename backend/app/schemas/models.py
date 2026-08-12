@@ -153,7 +153,6 @@ class EntityOut(ORMModel):
     regulation: RegulationOut | None = None
     standard: StandardOut | None = None
     events: list[EntityEventOut] = []
-    watched: bool = False
 
 
 class IncidentOut(ORMModel):
@@ -177,30 +176,6 @@ class IncidentOut(ORMModel):
     related_framework_slugs: list[str]
     source_links: list[dict]
     is_demo: bool
-
-
-class WatchOut(ORMModel):
-    id: int
-    target_type: str
-    target_key: str
-    created_at: datetime
-    last_viewed_at: datetime | None
-
-
-class WatchCreate(BaseModel):
-    target_type: str = Field(pattern="^(entity|source|jurisdiction|category)$")
-    target_key: str = Field(min_length=1, max_length=200)
-
-
-class WatchStatusOut(BaseModel):
-    watch_id: int
-    target_type: str
-    target_key: str
-    display_name: str
-    status: str
-    new_items: int
-    events: int
-    last_change_at: datetime | None
 
 
 class JurisdictionOut(BaseModel):

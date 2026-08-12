@@ -3,7 +3,7 @@
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models import Entity, Item, ItemEntity, Source, Watch
+from app.models import Entity, Item, ItemEntity, Source
 from app.schemas.models import EntityBrief, ItemOut
 
 
@@ -27,13 +27,6 @@ def item_to_out(db: Session, item: Item, cluster_sizes: dict[int, int] | None = 
     out.entities = entities
     out.cluster_size = cluster_size
     return out
-
-
-def watched_entity_slugs(db: Session) -> set[str]:
-    rows = db.execute(
-        select(Watch.target_key).where(Watch.target_type == "entity")
-    ).scalars().all()
-    return set(rows)
 
 
 def entity_names_for_item(db: Session, item_id: int) -> str:

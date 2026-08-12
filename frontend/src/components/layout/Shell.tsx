@@ -1,6 +1,6 @@
 /** App shell: fixed collapsible sidebar (desktop), bottom nav (mobile), global search. */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
@@ -11,29 +11,25 @@ import {
   LayoutDashboard,
   Menu,
   Newspaper,
-  Radar,
   Search,
   Settings,
-  Sunrise,
   X,
 } from "lucide-react";
 import clsx from "clsx";
 
-import { markVisit, useWatchStatuses } from "../../lib/api";
 import { RadarLogo } from "../ui/RadarLogo";
 
 const NAV = [
   { to: "/", label: "Home", icon: LayoutDashboard, end: true },
-  { to: "/brief", label: "Morning Brief", icon: Sunrise },
   { to: "/regulatory", label: "Regulatory Radar", icon: Landmark },
   { to: "/standards", label: "Standards", icon: BookOpenCheck },
   { to: "/incidents", label: "Incidents & Risks", icon: AlertTriangle },
-  { to: "/items", label: "Intelligence Feed", icon: Newspaper },
-  { to: "/watchlist", label: "Watchlist", icon: Radar },
+  { to: "/items", label: "All Sources", icon: Newspaper },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
-const MOBILE_NAV = [NAV[1], NAV[0], NAV[6], NAV[4]]; // Brief, Home, Watchlist, Incidents (§56)
+// Mobile priority (§56): Home, Regulatory, Incidents, All Sources
+const MOBILE_NAV = [NAV[0], NAV[1], NAV[3], NAV[4]];
 
 function GlobalSearch() {
   const navigate = useNavigate();
@@ -63,15 +59,6 @@ function GlobalSearch() {
 export function Shell() {
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { data: statuses } = useWatchStatuses();
-  const changed = statuses?.filter((s) => s.status !== "NO CHANGE").length ?? 0;
-
-  // Mark visit when the app loads (drives "since your last visit" counts) — after
-  // initial queries have had a chance to read the previous timestamp.
-  useEffect(() => {
-    const t = setTimeout(() => void markVisit().catch(() => undefined), 4000);
-    return () => clearTimeout(t);
-  }, []);
 
   const navBody = (isCollapsed: boolean, onNavigate?: () => void) => (
     <nav aria-label="Primary" className="flex flex-col gap-0.5 px-2">
@@ -93,11 +80,6 @@ export function Shell() {
         >
           <Icon aria-hidden className="h-4 w-4 shrink-0" />
           {!isCollapsed && <span className="truncate">{label}</span>}
-          {!isCollapsed && label === "Watchlist" && changed > 0 && (
-            <span className="ml-auto rounded-full bg-sev-critical/15 px-1.5 font-mono text-meta text-sev-critical">
-              {changed}
-            </span>
-          )}
         </NavLink>
       ))}
     </nav>

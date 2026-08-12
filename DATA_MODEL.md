@@ -2,9 +2,10 @@
 
 SQLAlchemy 2.0 models on **SQLite only** (DEC-019). Pre-release schema via
 `create_all()`; Alembic begins at V1 schema freeze (DEC-021). Follows the spec's
-guidance (§30): start with a core subset, expand deliberately. 12 tables (+ FTS5
-virtual index). `summaries`, `embeddings`, `model_providers`, `users`, `rankings`,
-`tags` tables are **deferred** (Phase 2+ / when a feature needs them).
+guidance (§30): start with a core subset, expand deliberately. 11 tables (+ FTS5
+virtual index) after `watches` was dropped with the watchlist (DEC-028).
+`summaries`, `embeddings`, `model_providers`, `users`, `rankings`, `tags` tables are
+**deferred** (Phase 2+ / when a feature needs them).
 
 Conventions: integer PK `id`; UTC ISO-8601 timestamps (`*_at`); `created_at` /
 `updated_at` on every table; enums stored as short strings (readable, greppable);
@@ -105,16 +106,10 @@ related_framework_slugs JSON (OWASP/ATLAS/NIST/ISO cross-links, §10).
 id; entity_id FK; event_type (`created`|`status_change`|`document_updated`|
 `date_changed`|`amended`|`enforcement`|`note`); occurred_at; previous_value?;
 new_value?; summary; evidence_item_id? FK items; impact_score?; created_at.
-Entity timeline = ordered entity_events. Watchlist change counts derive from these
-plus new items linked to watched targets.
+Entity timeline = ordered entity_events.
 
 ### item_entities
 item_id FK + entity_id FK (composite PK), relation (`about`|`mentions`|`evidence`).
-
-### watches (§5.5 — single-user V1, DEC-008)
-id; target_type (`entity`|`source`|`jurisdiction`|`category`); target_key
-(entity slug / source id / jurisdiction code / category name);
-created_at; last_viewed_at (drives "changed since my last visit").
 
 ### app_state
 key PK, value JSON — single-user prefs: dashboard settings, last_visit_at,
@@ -134,7 +129,6 @@ entities 1─0..1 regulations            entities 1─0..1 standards
 entities 1─* entity_events (*─0..1 evidence item)
 incidents *─(evidence via item_entities on linked items; framework slugs JSON)
 jurisdiction codes ← validated against core/jurisdictions.py (static module)
-watches → polymorphic target_key
 ```
 
 ## Integrity rules (§65 — enforced in code + review, not just schema)
