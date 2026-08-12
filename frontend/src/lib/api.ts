@@ -91,7 +91,9 @@ export const useRegulations = (filters: { country?: string; status?: string; jur
     queryFn: () => request<EntityOut[]>(`/regulations${qs(filters)}`),
   });
 
-export const useStandards = (filters: { publisher?: string; status?: string } = {}) =>
+export const useStandards = (
+  filters: { publisher?: string; status?: string; country?: string } = {},
+) =>
   useQuery({
     queryKey: ["standards", filters],
     queryFn: () => request<EntityOut[]>(`/standards${qs(filters)}`),

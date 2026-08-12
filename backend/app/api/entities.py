@@ -70,6 +70,8 @@ def list_regulations(
 def list_standards(
     publisher: str | None = None,
     status: str | None = None,
+    jurisdiction: str | None = None,
+    country: str | None = Query(default=None, description="Country prefix, e.g. US matches US-*"),
     db: Session = Depends(get_db),
 ) -> list[Entity]:
     q = (
@@ -81,4 +83,11 @@ def list_standards(
         q = q.where(Standard.publisher == publisher)
     if status:
         q = q.where(Standard.status == status)
+    if jurisdiction:
+        q = q.where(Entity.jurisdiction_code == jurisdiction)
+    if country:
+        q = q.where(
+            (Entity.jurisdiction_code == country)
+            | (Entity.jurisdiction_code.like(f"{country}-%"))
+        )
     return list(db.execute(q.order_by(Entity.name)).unique().scalars().all())

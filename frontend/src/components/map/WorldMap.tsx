@@ -100,12 +100,25 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
   };
   const legend = metric === "instruments" ? INSTRUMENT_LEGEND : VOLUME_LEGEND;
 
-  const open = (row: MapRow) =>
-    navigate(
-      metric === "instruments"
-        ? `/regulatory?country=${row.link_code}`
-        : `/items?jurisdiction=${row.link_code}`,
-    );
+  /** Send the click where the records actually are: a jurisdiction tracked only via
+   * a framework (Australia, Singapore, UK…) has nothing on the Regulatory Radar, so
+   * routing it there would land on an empty table. */
+  const destination = (row: MapRow): string => {
+    if (metric !== "instruments") return `/items?jurisdiction=${row.link_code}`;
+    if (row.binding > 0) return `/regulatory?country=${row.link_code}`;
+    if (row.guidance > 0) return `/standards?country=${row.link_code}`;
+    return `/items?jurisdiction=${row.link_code}`;
+  };
+
+  const open = (row: MapRow) => navigate(destination(row));
+
+  const describe = (row: MapRow): string => {
+    const parts = [
+      row.binding > 0 ? `${row.binding} binding law${row.binding === 1 ? "" : "s"}` : null,
+      row.guidance > 0 ? `${row.guidance} framework or guidance` : null,
+    ].filter(Boolean);
+    return `${row.name}: ${parts.join(", ") || `${row.recent_items} recent items`}`;
+  };
 
   return (
     <div className="relative mx-auto w-full max-w-[620px]">
@@ -154,12 +167,11 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
               fill={fillColor(value)}
               stroke={BORDER}
               strokeWidth={0.5}
-              tabIndex={row && value > 0 ? 0 : -1}
-              role={row && value > 0 ? "button" : undefined}
-              aria-label={row && value > 0 ? `${row.name}: ${value} — open details` : undefined}
-              className={row && value > 0 ? "cursor-pointer transition-opacity hover:opacity-80 focus:opacity-80" : ""}
+              // Landmass stays clickable for convenience, but keyboard access and
+              // labelling live on the markers, which every jurisdiction has.
+              aria-hidden
+              className={row && value > 0 ? "cursor-pointer transition-opacity hover:opacity-80" : ""}
               onClick={() => row && value > 0 && open(row)}
-              onKeyDown={(e) => e.key === "Enter" && row && value > 0 && open(row)}
               onMouseMove={(e) => {
                 const rect = (e.target as SVGPathElement).ownerSVGElement!.getBoundingClientRect();
                 setHover({
@@ -172,13 +184,36 @@ export function WorldMap({ rows }: { rows: MapRow[] }) {
             />
           );
         })}
+        {/* Markers are the interactive layer: they are what a reader aims at, and
+            micro-states like Singapore have polygons only a pixel or two wide. */}
         {rows.filter((r) => r[metric] > 0 && r.iso_numeric).map((r) => {
           const c = centroids.get(r.iso_numeric!.padStart(3, "0"));
           if (!c) return null;
           const col = dotColor(r);
           const radius = 2.5 + 2.5 * Math.sqrt(r[metric] / max);
           return (
-            <g key={`dot-${r.code}`} pointerEvents="none">
+            <g
+              key={`dot-${r.code}`}
+              role="button"
+              tabIndex={0}
+              aria-label={`${describe(r)} — open details`}
+              className="cursor-pointer"
+              onClick={() => open(r)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  open(r);
+                }
+              }}
+              onMouseMove={(e) => {
+                const rect = (e.currentTarget as SVGGElement).ownerSVGElement!.getBoundingClientRect();
+                setHover({ name: r.name, row: r, x: e.clientX - rect.left, y: e.clientY - rect.top });
+              }}
+              onFocus={() => setHover({ name: r.name, row: r, x: c[0], y: c[1] })}
+              onBlur={() => setHover(null)}
+            >
+              {/* Generous transparent hit area so small nations are reachable */}
+              <circle cx={c[0]} cy={c[1]} r={Math.max(radius + 7, 10)} fill="transparent" />
               <circle cx={c[0]} cy={c[1]} r={radius + 4} fill={col} opacity={0.18} />
               <circle cx={c[0]} cy={c[1]} r={radius + 1.5} fill={col} opacity={0.35} />
               <circle cx={c[0]} cy={c[1]} r={radius} fill={col} stroke="rgba(255,255,255,.5)" strokeWidth={0.6} />

@@ -73,6 +73,20 @@ def test_standards(client):
     assert len(r.json()) >= 2
 
 
+def test_every_map_marker_leads_somewhere_real(client):
+    """A marker that opens an empty page is worse than no marker. Jurisdictions
+    tracked only via a framework must route to Standards, not the Regulatory
+    Radar, which lists binding law only."""
+    for row in client.get("/api/dashboard/map").json():
+        if not row["instruments"]:
+            continue
+        if row["binding"] > 0:
+            results = client.get("/api/regulations", params={"country": row["link_code"]}).json()
+        else:
+            results = client.get("/api/standards", params={"country": row["link_code"]}).json()
+        assert results, f"{row['code']} marker would open an empty page"
+
+
 def test_incidents_sorted_and_detail(client):
     r = client.get("/api/incidents")
     incidents = r.json()

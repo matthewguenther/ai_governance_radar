@@ -15,7 +15,16 @@ const TABS = ["All", "NIST", "ISO", "OWASP", "MITRE", "Other"];
 export default function Standards() {
   const [params, setParams] = useSearchParams();
   const tab = params.get("publisher") ?? "All";
-  const all = useStandards();
+  // Set when arriving from the map for a jurisdiction governed by framework rather
+  // than statute (Australia, Singapore, UK…).
+  const country = params.get("country") ?? "";
+  const all = useStandards({ country: country || undefined });
+
+  const clearCountry = () => {
+    const next = new URLSearchParams(params);
+    next.delete("country");
+    setParams(next, { replace: true });
+  };
 
   const filtered = all.data?.filter((e) => {
     if (tab === "All") return true;
@@ -30,7 +39,19 @@ export default function Standards() {
     <>
       <PageHeader
         title="Standards & Frameworks"
-        detail="Lifecycle tracking for AI governance standards — curated records with official sources."
+        detail="Lifecycle tracking for AI governance standards and national frameworks — curated records with official sources."
+        actions={
+          country ? (
+            <button
+              onClick={clearCountry}
+              className="inline-flex items-center gap-1.5 rounded-ctl border border-accent/40 bg-accent/10 px-2.5 py-1 text-xs text-accent"
+            >
+              Jurisdiction: {country}
+              <span aria-hidden>×</span>
+              <span className="sr-only">Clear jurisdiction filter</span>
+            </button>
+          ) : undefined
+        }
       />
 
       {/* At a glance (§23) */}
